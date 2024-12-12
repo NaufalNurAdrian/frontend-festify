@@ -2,6 +2,7 @@
 import { useState } from "react";
 import BurgerSidebar from "./burgerSidebar";
 import { CgMenuLeftAlt } from "react-icons/cg";
+import { Avatar } from "./avatar";
 
 export default function DashboardHeader () {
   const [setSidebar, setIsSidebarOpen] = useState<boolean>(false)
@@ -23,9 +24,7 @@ export default function DashboardHeader () {
           <button className="border border-black px-4 py-2 rounded-lg hover:bg-gray-100 transition sm:w-auto w-full hidden lg:block">
             Buat Event
           </button>
-          <button className="border shadow-md px-4 py-2 rounded-3xl w-full sm:w-40 lg:w-52 hover:bg-gray-50 transition">
-            Login
-          </button>
+          <Avatar/>
         </div>
       </div>
     );
