@@ -6,6 +6,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "cdn.antaranews.com",
       },
+      {
+        protocol: "https",
+        hostname: "img.freepik.com",
+      },
     ],
   },
 };
