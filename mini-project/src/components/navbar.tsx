@@ -1,22 +1,15 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { FiSearch } from "react-icons/fi";
 import { RxHamburgerMenu } from "react-icons/rx";
+
+import SearchBar from "./searchbar";
+
 import { TbFilter } from "react-icons/tb";
 import { Avatar } from "./avatar";
 
 export default function Navbar() {
-  const [searchVisible, setSearchVisible] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-
-  // function buat klik di luar kolom search ke close
-  const handleSearchClickOutside = (e: React.MouseEvent) => {
-    const searchModal = document.getElementById("search-modal");
-    if (searchModal && !searchModal.contains(e.target as Node)) {
-      setSearchVisible(false);
-    }
-  };
 
   return (
     <header className="bg-white shadow-2xl">
@@ -26,24 +19,7 @@ export default function Navbar() {
           <div className="text-red font-bold text-3xl">Festify.</div>
 
           {/* kolom search desktop */}
-          <div className="hidden lg:flex items-center bg-gray-100 rounded-full shadow-sm p-2 w-full md:w-[500px]">
-            <div className="flex items-center px-4 w-full">
-              <input
-                type="text"
-                placeholder="Search events"
-                className="bg-transparent outline-none px-2 text-sm w-full"
-              />
-            </div>
-            <div className="space-x-2 flex">
-              <button className="bg-red rounded-full px-4 py-1 text-white text-sm">
-                <FiSearch />
-              </button>
-
-              <button className="bg-red rounded-full px-4 py-1 text-white text-sm">
-                <TbFilter />
-              </button>
-            </div>
-          </div>
+          <SearchBar />
         </div>
 
         {/* navigation */}
@@ -59,42 +35,14 @@ export default function Navbar() {
 
         {/* hamburger menu dimobile */}
         <div className="lg:hidden flex items-center space-x-4">
-          <button onClick={() => setSearchVisible(true)} className="text-lg">
-            <FiSearch />
-          </button>
+          {/* SearchBar Mobile */}
+          <SearchBar isMobile />
+
           <button onClick={() => setMenuOpen(true)} className="text-lg">
             <RxHamburgerMenu />
           </button>
         </div>
       </div>
-
-      {/*  mobile */}
-      {searchVisible && (
-        <div
-          className="fixed inset-0 bg-gray-800 bg-opacity-50 z-50 flex justify-center items-start pt-4"
-          onClick={handleSearchClickOutside} // Nutup jika klik di luar
-        >
-          <div
-            id="search-modal"
-            className="bg-white p-4 rounded-2xl w-full max-w-lg mx-2"
-            onClick={(e) => e.stopPropagation()} // biar modal ganutup jika klik di dalam
-          >
-            <div className="flex items-center">
-              <input
-                type="text"
-                placeholder="Search events"
-                className="bg-transparent outline-none px-4 py-2 text-sm w-full"
-              />
-              <button
-                className="bg-red rounded-full px-4 py-1 text-white text-sm"
-                onClick={() => setSearchVisible(false)}
-              >
-                <FiSearch />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* untuk menu navigasi di mobile  */}
       {menuOpen && (
