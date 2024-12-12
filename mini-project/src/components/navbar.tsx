@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FiSearch } from "react-icons/fi";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { TbFilter } from "react-icons/tb";
+import { Avatar } from "./avatar";
 
 export default function Navbar() {
   const [searchVisible, setSearchVisible] = useState(false);
@@ -53,18 +54,7 @@ export default function Navbar() {
           <Link href="#" className="hover:text-gray-900">
             Explore
           </Link>
-          <Link
-            href="#" //link ke page log in
-            className="flex rounded-full border px-4 py-1 border-black hover:bg-red hover:text-white hover:border-red whitespace-nowrap"
-          >
-            Log In
-          </Link>
-          <Link
-            href="#" //link ke page sign up
-            className=" bg-red text-white px-4 py-1 rounded-full hover:bg-codgray whitespace-nowrap"
-          >
-            Sign Up
-          </Link>
+          <Avatar />
         </div>
 
         {/* hamburger menu dimobile */}

@@ -4,7 +4,7 @@ import "./globals.css";
 import { SessionProvider } from "@/components/context/useSession";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Navbar from "@/components/navbar";
+import NavbarExcept from "@/components/navbarExcept";
 
 const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
@@ -26,13 +26,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={poppins.className}>
         <SessionProvider>
-          <Navbar />
+          <NavbarExcept />
           {children}
           <ToastContainer
             draggable
             closeOnClick
-            autoClose={5000}
-            theme="dark"
+            autoClose={3000}
+            theme="light"
             position="bottom-right"
           />
         </SessionProvider>
