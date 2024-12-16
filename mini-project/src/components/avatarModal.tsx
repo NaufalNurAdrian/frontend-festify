@@ -6,6 +6,20 @@ import { IUser } from "@/types/user";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
+// Helper functions for managing cookies
+const setCookie = (name: string, value: string, days: number) => {
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = `${name}=${value}; expires=${expires}; path=/`;
+};
+
+const getCookie = (name: string) => {
+  const value = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith(name + "="))
+    ?.split("=")[1];
+  return value || null;
+};
+
 const AvatarModal = ({
   user,
   onLogout,
@@ -15,6 +29,7 @@ const AvatarModal = ({
 }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [role, setRole] = useState(getCookie("role") || "CUSTOMER");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -29,28 +44,11 @@ const AvatarModal = ({
     }
   };
 
-  const changeRole = async (role: string) => {
-    if (!user) return;
+  const changeRole = (newRole: string) => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `http://localhost:8000/api/auth/${role.toLowerCase()}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ role: { user_id: user.user_id } }),
-        }
-      );
-      const data = await response.json();
-      if (response.ok) {
-        location.reload()
-        toast.success("Success Change Role");
-        router.refresh();
-      } else {
-        throw new Error(data.message || "Failed to change role");
-      }
+      setCookie("role", newRole, 7); // Save role to cookie for 7 days
+      setRole(newRole); // Update local state
     } catch (err) {
       console.error(err);
       toast.error("Fail to Change Role");
@@ -80,10 +78,10 @@ const AvatarModal = ({
         <div className="w-10 h-10 relative">
           <Image
             className="rounded-full object-cover"
-            src={user?.avatar || ""}
-            alt={user?.username || "author"}
-            fill
-            priority
+            src={user?.avatar || "https://media.istockphoto.com/id/1495088043/id/vektor/ikon-profil-pengguna-avatar-atau-ikon-orang-gambar-profil-simbol-potret-gambar-potret.jpg?s=612x612&w=0&k=20&c=vMnxIgiQh5EFyQrFGGNKtbb6tuGCT04L58nwwEGzIbc="}
+            alt={user!.username}
+            width={300}
+            height={300}
           />
         </div>
         <div className="flex-1 min-w-0 ms-2 max-sm:hidden">
@@ -98,10 +96,10 @@ const AvatarModal = ({
 
       {isDropdownOpen && (
         <div className="container mx-auto flex flex-col absolute right-0 mt-2 w-60 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-10">
-          <ul className="py-1">
-            <li>
+          <div className="py-1">
+            <div>
               <div className="flex flex-col gap-2 font-normal justify-center pt-2 pb-5">
-                {user?.role === "CUSTOMER" && (
+                {role === "CUSTOMER" && (
                   <div>
                     <div className="flex justify-center text-xs font-semibold">
                       Change Account
@@ -119,7 +117,7 @@ const AvatarModal = ({
                     </div>
                   </div>
                 )}
-                {user?.role === "ORGANIZER" && (
+                {role === "ORGANIZER" && (
                   <div>
                     <div className="flex justify-center text-xs font-semibold">
                       Change Account
@@ -139,15 +137,15 @@ const AvatarModal = ({
                 )}
               </div>
               <hr className="border-b-0 border-l-0 border-r-0 border-t-1 mx-7 border-codgray" />
-              {user?.role === "ORGANIZER" && (
-                <li>
+              {role === "ORGANIZER" && (
+                <div>
                   <button
                     onClick={() => router.push("/dashboard")}
                     className="block w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
                     Dashboard
                   </button>
-                </li>
+                </div>
               )}
               <button
                 onClick={() => router.push("/explore")}
@@ -175,16 +173,16 @@ const AvatarModal = ({
                 Settings
               </button>
               <hr className="border-b-0 border-l-0 border-r-0 border-t-1 mx-7 border-codgray" />
-            </li>
-            <li>
+            </div>
+            <div>
               <button
                 onClick={onLogout}
                 className="block text-red w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-600 dark:text-red-400"
               >
                 Logout
               </button>
-            </li>
-          </ul>
+            </div>
+          </div>
         </div>
       )}
     </div>

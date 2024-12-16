@@ -1,19 +1,23 @@
 "use client";
 
 import Link from "next/link";
+import Sidebar from "./sidebar";
 
 interface BurgerSidebarProps {
   isMenuOpen: boolean;
   toggleMenu: () => void;
 }
 
-const BurgerSidebar: React.FC<BurgerSidebarProps> = ({ isMenuOpen, toggleMenu }) => {
+const BurgerSidebar: React.FC<BurgerSidebarProps> = ({
+  isMenuOpen,
+  toggleMenu,
+}) => {
   return (
     <>
       {isMenuOpen && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-start items-center z-50">
           <div
-            className="bg-codgray rounded-r-xl text-white p-6 w-[300px] h-full shadow-lg"
+            className="bg-codgray text-white rounded-r-xl h-screen w-52 p-2"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-start">
@@ -34,34 +38,35 @@ const BurgerSidebar: React.FC<BurgerSidebarProps> = ({ isMenuOpen, toggleMenu })
                 </svg>
               </button>
             </div>
-            <div>
-      <div className="text-3xl font-extrabold text-red mb-8">
-        Festify.
-      </div>
-      <div>
-        <div className="mb-4">
-          <Link href="/dashboard" className="hover:text-white">
-            Dashboard
-          </Link>
-        </div>
-        <div className="mb-4">
-          <Link href="/dashboard/eventsaya" className="hover:text-white">
-            Event Saya
-          </Link>
-        </div>
-        <div className="mb-4">
-          <Link href="/settings" className="hover:text-white">
-            Pengaturan
-          </Link>
-        </div>
-        <div className="mb-4">
-          <Link href="/accounts" className="hover:text-white">
-            Informasi Legal
-          </Link>
-        </div>
-      </div>
-    </div>
-          </div>
+              <div className="flex justify-center text-3xl font-extrabold mb-8 text-red mt-5">
+                <Link href="/">Festify.</Link>
+              </div>
+              <div className="flex flex-col gap-5 mt-10 font-normal">
+                <div className="flex p-2 items-center  rounded-md h-8 hover:bg-slate-800">
+                  <Link href="/dashboard" className="hover:text-white">
+                    Dashboard
+                  </Link>
+                </div>
+                <div className="flex p-2 items-center  rounded-md h-8 hover:bg-slate-800">
+                  <Link
+                    href="/dashboard/eventsaya"
+                    className="hover:text-white text-white"
+                  >
+                    Event Saya
+                  </Link>
+                </div>
+                <div className="flex p-2 items-center  rounded-md h-8 hover:bg-slate-800">
+                  <Link href="/settings" className="hover:text-white">
+                    Pengaturan
+                  </Link>
+                </div>
+                <div className="flex p-2 items-center  rounded-md h-8 hover:bg-slate-800">
+                  <Link href="/accounts" className="hover:text-white">
+                    Informasi Legal
+                  </Link>
+                </div>
+              </div>
+            </div>
         </div>
       )}
     </>

@@ -10,3 +10,7 @@ export default async function action(tags: string) {
 export const deleteCookie = (key: string) => {
     cookies().delete(key)
 }
+
+export const getToken = () => {
+    return cookies().get("token");
+  };
