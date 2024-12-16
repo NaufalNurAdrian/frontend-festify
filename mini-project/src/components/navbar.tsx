@@ -2,11 +2,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { RxHamburgerMenu } from "react-icons/rx";
-
 import SearchBar from "./searchbar";
-
 import { TbFilter } from "react-icons/tb";
 import { Avatar } from "./avatar";
+import { ToastContainer } from "react-toastify";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -24,7 +23,10 @@ export default function Navbar() {
 
         {/* navigation */}
         <div className=" hidden lg:flex items-center space-x-6 text-sm text-gray-700 md:ml-4">
-          <Link href="#" className="hover:text-gray-900 whitespace-nowrap ">
+          <Link
+            href="/dashboard/create-event"
+            className="hover:text-gray-900 whitespace-nowrap "
+          >
             Create Events
           </Link>
           <Link href="#" className="hover:text-gray-900">
@@ -35,7 +37,6 @@ export default function Navbar() {
 
         {/* hamburger menu dimobile */}
         <div className="lg:hidden flex items-center space-x-4">
-          {/* SearchBar Mobile */}
           <SearchBar isMobile />
 
           <button onClick={() => setMenuOpen(true)} className="text-lg">
@@ -54,13 +55,13 @@ export default function Navbar() {
             <div className="space-y-4">
               <div className="flex flex-col space-y-2 py-2">
                 <Link
-                  href="#" //link page login
+                  href="/login" //link page login
                   className="rounded-full border px-4 py-1 border-black hover:bg-red hover:text-white hover:border-red"
                 >
                   Log In
                 </Link>
                 <Link
-                  href="#" // link page sign up
+                  href="/signup" // link page sign up
                   className="bg-red text-white px-4 py-1 rounded-full hover:bg-codgray"
                 >
                   Sign Up
@@ -74,7 +75,7 @@ export default function Navbar() {
                   Create Event
                 </Link>
                 <Link
-                  href="#"
+                  href="/dashboard/create-event"
                   className="text-sm text-gray-700 hover:text-gray-900 py-2 text-start"
                 >
                   Explore
@@ -82,6 +83,11 @@ export default function Navbar() {
               </div>
             </div>
           </div>
+          <ToastContainer
+            position="top-center"
+            autoClose={3000}
+            className="absolute"
+          />
         </div>
       )}
     </header>

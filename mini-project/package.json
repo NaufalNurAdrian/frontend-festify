@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@contentful/rich-text-react-renderer": "^16.0.0",
+    "axios": "^1.7.9",
     "formik": "^2.4.6",
     "next": "^14.2.16",
     "react": "^18",
