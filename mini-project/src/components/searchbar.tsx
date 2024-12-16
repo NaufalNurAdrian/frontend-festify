@@ -8,6 +8,9 @@ import { FiSearch } from "react-icons/fi";
 import { TbFilter } from "react-icons/tb";
 import { useDebounce } from "use-debounce";
 import EventCard from "./cardevent";
+import Image from "next/image";
+import { formatDate } from "@/helpers/formatDate";
+import Link from "next/link";
 
 interface SearchBarProps {
   isMobile?: boolean;
@@ -145,18 +148,34 @@ const SearchBar: React.FC<SearchBarProps> = ({ isMobile = false }) => {
           {isLoading ? (
             <div className="loader"></div>
           ) : events.length === 0 ? (
-            <ul className="absolute z-10 w-96 bg-white mt-24 rounded-md shadow-lg">
-              <li className="p-2 hover:bg-gray-100">Not found</li>
+            <ul className="absolute z-10 w-96 bg-white mt-32 opacity-80 rounded-md shadow-lg">
+              <li className="p-4 hover:bg-gray-200 rounded-md opacity-100 ">
+                Not found
+              </li>
             </ul>
           ) : (
-            <ul className="absolute z-10 w-96 bg-white mt-24 rounded-md shadow-lg">
+            <ul className="absolute z-10 w-96 bg-white mt-32 opacity-90 rounded-md shadow-lg">
               {events.map((item, idx) => (
                 <li
                   key={idx}
                   data-cy="blog-item"
-                  className="p-2 hover:bg-gray-100"
+                  className="p-2 hover:bg-gray-200 rounded-md flex gap-4 items-start"
                 >
-                  {item.title}
+                  <img
+                    src={item.thumbnail}
+                    alt="xx"
+                    width={100}
+                    height={100}
+                    className="rounded-md"
+                  />
+                  <Link href={`/event/${item.slug}`}>
+                    <div className="flex flex-col justify-start">
+                      <p className="font-medium">{item.title}</p>
+                      <p className="font-light text-sm text-gray-500">
+                        {formatDate(item.startTime)}
+                      </p>
+                    </div>
+                  </Link>
                 </li>
               ))}
             </ul>

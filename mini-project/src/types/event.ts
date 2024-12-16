@@ -8,6 +8,7 @@ export interface IEvent {
   slug: string;
   thumbnail: string;
   organizer: IUser;
+  Ticket: ITicket[];
 }
 
 export interface IUser {

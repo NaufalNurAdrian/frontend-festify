@@ -41,6 +41,7 @@ export default async function HomePage() {
                 slug={item.slug}
                 username={item.organizer.username || "Unknown"}
                 location={item.location}
+               
               />
             </div>
           ))}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import { FaMapMarkerAlt } from "react-icons/fa";
 
 interface IEventCard {
   title: string;
@@ -29,8 +30,19 @@ const EventCard: React.FC<IEventCard> = ({
           <h3 className="text-lg font-bold text-gray-800 truncate">{title}</h3>
           <p className="text-sm text-gray-500">{description}</p>
           <p className="mt-2 text-base font-semibold text-gray-800"></p>
-          <p className="text-sm text-gray-500">{location}</p>
-          <p className="mt-1 text-sm text-gray-500">{username}</p>
+          <p className="text-sm text-gray-500 flex items-center gap-2 pb-4">
+            <FaMapMarkerAlt className="text-gray-400 flex" />
+            {location}
+          </p>
+          <hr className=" border-gray-400 py-2" />
+          <p className="mt-1 text-sm text-gray-500 flex items-center">
+            <img
+              src={avatar}
+              alt="avatar"
+              className="w-8 h-8 rounded-full mr-3"
+            />
+            <span>{username}</span>
+          </p>
         </div>
       </div>
     </Link>
