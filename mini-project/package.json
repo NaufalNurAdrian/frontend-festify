@@ -10,15 +10,12 @@
   },
   "dependencies": {
     "@contentful/rich-text-react-renderer": "^16.0.0",
-<<<<<<< HEAD
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^6.2.0",
     "@mui/x-charts": "^7.23.2",
     "chart.js": "^4.4.7",
-=======
     "axios": "^1.7.9",
->>>>>>> 65ee03a8c974eb4d809208160b31ee6c95e38d68
     "formik": "^2.4.6",
     "next": "^14.2.16",
     "react": "^18",
