@@ -10,7 +10,7 @@ export default function DashboardHeader () {
     setIsSidebarOpen(!setSidebar)
   }
     return (
-      <div className="bg-white shadow-md p-4 flex flex-wrap justify-between items-center">
+      <div className="bg-white shadow-md p-4 flex justify-between items-center w-full">
         <div className="lg:hidden block">
           <button onClick={toogleSidebar}>
           <BurgerSidebar isMenuOpen={setSidebar}  toggleMenu={toogleSidebar}/>

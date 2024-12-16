@@ -8,6 +8,7 @@ import React, {
   ReactNode,
 } from "react";
 import { IUser } from "@/types/user";
+import { getToken } from "@/libs/action";
 
 interface SessionContextProps {
   isAuth: boolean;
@@ -28,6 +29,13 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({
 
   const checkSession = async () => {
     try {
+      const token = await getToken();
+      console.log(token);
+      
+      if (!token) {
+        console.log("Login First");
+        return;
+      }
       const res = await fetch("http://localhost:8000/api/users/profile", {
         method: "GET",
         credentials: "include",
