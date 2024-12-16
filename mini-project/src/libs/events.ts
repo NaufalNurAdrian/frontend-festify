@@ -1,8 +1,9 @@
 import { IEvent } from "@/types/event";
+import axios from "axios";
 
 export const getEvent = async () => {
   const res = await fetch(`http://localhost:8000/api/event`, {
-    next: { revalidate: 0 },
+    next: { revalidate: 60 },
   });
   const data = await res.json();
   return data.events;
@@ -12,7 +13,7 @@ export const getEvent = async () => {
 
 export const getEventSlug = async (slug: string) => {
   const res = await fetch(`http://localhost:8000/api/event/${slug}`, {
-    next: { revalidate: 0 }, // Opsional: Hapus atau sesuaikan sesuai kebutuhan
+    next: { revalidate: 60 }, // Opsional: Hapus atau sesuaikan sesuai kebutuhan
   });
 
   if (!res.ok) {
