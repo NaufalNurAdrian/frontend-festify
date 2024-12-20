@@ -6,20 +6,6 @@ import { IUser } from "@/types/user";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
-// Helper functions for managing cookies
-const setCookie = (name: string, value: string, days: number) => {
-  const expires = new Date(Date.now() + days * 864e5).toUTCString();
-  document.cookie = `${name}=${value}; expires=${expires}; path=/`;
-};
-
-const getCookie = (name: string) => {
-  const value = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith(name + "="))
-    ?.split("=")[1];
-  return value || null;
-};
-
 const AvatarModal = ({
   user,
   onLogout,
@@ -29,7 +15,7 @@ const AvatarModal = ({
 }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [role, setRole] = useState(getCookie("role") || "CUSTOMER");
+  const [role, setRole] = useState<string>("CUSTOMER");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -47,7 +33,7 @@ const AvatarModal = ({
   const changeRole = (newRole: string) => {
     setLoading(true);
     try {
-      setCookie("role", newRole, 7); // Save role to cookie for 7 days
+      localStorage.setItem("role", newRole); // Save role to localStorage
       setRole(newRole); // Update local state
     } catch (err) {
       console.error(err);
@@ -56,6 +42,40 @@ const AvatarModal = ({
       setLoading(false);
     }
   };
+
+  const handleLogout = () => {
+    try {
+      // Hapus token dari localStorage
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      onLogout();
+      toast.success("Successfully logged out!");
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast.error("Logout failed. Please try again.");
+    }
+  };
+
+  useEffect(() => {
+    // Fetch role from localStorage on component mount
+    const storedRole = localStorage.getItem("role") || "CUSTOMER";
+    setRole(storedRole);
+
+    // Listen to storage changes for role updates in other tabs
+    const handleStorageChange = () => {
+      const updatedRole = localStorage.getItem("role") || "CUSTOMER";
+      if (updatedRole !== role) {
+        setRole(updatedRole);
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, [role]);
 
   useEffect(() => {
     if (isDropdownOpen) {
@@ -78,7 +98,7 @@ const AvatarModal = ({
         <div className="w-10 h-10 relative">
           <Image
             className="rounded-full object-cover"
-            src={user?.avatar || "https://media.istockphoto.com/id/1495088043/id/vektor/ikon-profil-pengguna-avatar-atau-ikon-orang-gambar-profil-simbol-potret-gambar-potret.jpg?s=612x612&w=0&k=20&c=vMnxIgiQh5EFyQrFGGNKtbb6tuGCT04L58nwwEGzIbc="}
+            src={user?.avatar || "/festifylogo.png"}
             alt={user!.username}
             width={300}
             height={300}
@@ -176,7 +196,7 @@ const AvatarModal = ({
             </div>
             <div>
               <button
-                onClick={onLogout}
+                onClick={handleLogout}
                 className="block text-red w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-600 dark:text-red-400"
               >
                 Logout

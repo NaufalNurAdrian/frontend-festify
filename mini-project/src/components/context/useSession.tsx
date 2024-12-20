@@ -8,18 +8,21 @@ import React, {
   ReactNode,
 } from "react";
 import { IUser } from "@/types/user";
-import { getToken } from "@/libs/action";
 
 interface SessionContextProps {
   isAuth: boolean;
   user: IUser | null;
   setIsAuth: (isAuth: boolean) => void;
   setUser: (user: IUser | null) => void;
+  checkSession: () => Promise<void>;
+  logout: () => void;
 }
 
 const SessionContext = createContext<SessionContextProps | undefined>(
   undefined
 );
+
+const base_url = process.env.NEXT_PUBLIC_BASE_URL_BE;
 
 export const SessionProvider: React.FC<{ children: ReactNode }> = ({
   children,
@@ -29,16 +32,16 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({
 
   const checkSession = async () => {
     try {
-      const token = await getToken();
-      console.log(token);
-      
+      const token = localStorage.getItem("token");
       if (!token) {
         console.log("Login First");
         return;
       }
-      const res = await fetch("http://localhost:8000/api/users/profile", {
+      const res = await fetch(`${base_url}/users/profile`, {
         method: "GET",
-        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       const result = await res.json();
       if (!res.ok) throw result;
@@ -49,12 +52,26 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
+  const resetSession = () => {
+    setIsAuth(false);
+    setUser(null);
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    resetSession();
+    setIsAuth(false);
+    setUser(null);
+  };
+
   useEffect(() => {
     checkSession();
   }, []);
 
   return (
-    <SessionContext.Provider value={{ isAuth, user, setIsAuth, setUser }}>
+    <SessionContext.Provider
+      value={{ isAuth, user, setIsAuth, setUser, checkSession, logout }}
+    >
       {children}
     </SessionContext.Provider>
   );

@@ -41,7 +41,7 @@ export default function Register() {
     referralCode: "",
   };
 
-  const handleAdd = async (user: FormValues) => {
+  const handleRegister = async (user: FormValues) => {
     try {
       setIsLoading(true);
       const res = await fetch("http://localhost:8000/api/auth/register", {
@@ -85,7 +85,7 @@ export default function Register() {
                 initialValues={initialValue}
                 validationSchema={RegisterSchema}
                 onSubmit={(values, actions) => {
-                  handleAdd(values);
+                  handleRegister(values);
                   actions.resetForm();
                 }}
               >

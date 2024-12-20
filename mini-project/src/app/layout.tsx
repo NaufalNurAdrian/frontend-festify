@@ -32,7 +32,7 @@ export default function RootLayout({
             draggable
             closeOnClick
             autoClose={3000}
-            position="top-center"
+            position="bottom-right"
           />
         </SessionProvider>
       </body>
