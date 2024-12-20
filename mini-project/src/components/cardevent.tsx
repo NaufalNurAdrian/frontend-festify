@@ -39,7 +39,7 @@ const EventCard: React.FC<IEventCard> = ({
             <img
               src={avatar}
               alt="avatar"
-              className="w-8 h-8 rounded-full mr-3"
+              className="w-8 h-7 rounded-full mr-3"
             />
             <span>{username}</span>
           </p>

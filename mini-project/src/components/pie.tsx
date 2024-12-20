@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { PieChart } from '@mui/x-charts/PieChart';
+import * as React from "react";
+import { PieChart } from "@mui/x-charts/PieChart";
 
 export default function BasicPie() {
   return (
@@ -7,9 +7,9 @@ export default function BasicPie() {
       series={[
         {
           data: [
-            { id: 0, value: 10, label: 'STANDARD' },
-            { id: 1, value: 15, label: 'VIP' },
-            { id: 2, value: 20, label: 'VVIP' },
+            { id: 0, value: 10, label: "STANDARD" },
+            { id: 1, value: 15, label: "VIP" },
+            { id: 2, value: 20, label: "VVIP" },
           ],
         },
       ]}

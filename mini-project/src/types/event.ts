@@ -1,10 +1,10 @@
 export interface IEvent {
   title: string;
   description: string;
+  category: string;
   location: string;
   startTime: string;
   endTime: string;
-  createdAt: string;
   slug: string;
   thumbnail: string;
   organizer: IUser;
@@ -18,7 +18,7 @@ export interface IUser {
 
 export interface ITicket {
   ticket_id: string;
-  type: string;
+  type: "STANDARD" | "VIP" | "VVIP" | "FREE";
   price: number;
   seats: number;
   createdAt: string;
