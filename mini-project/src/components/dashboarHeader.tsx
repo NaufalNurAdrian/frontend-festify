@@ -3,6 +3,7 @@ import { useState } from "react";
 import BurgerSidebar from "./burgerSidebar";
 import { CgMenuLeftAlt } from "react-icons/cg";
 import { Avatar } from "./avatar";
+import Link from "next/link";
 
 export default function DashboardHeader () {
   const [setSidebar, setIsSidebarOpen] = useState<boolean>(false)
@@ -21,9 +22,12 @@ export default function DashboardHeader () {
         <h2 className="text-lg font-bold sm:text-xl">Home</h2>
         </div>
         <div className="flex gap-4 flex-wrap mt-2 sm:mt-0">
+          <Link href="/dashboard/create">
+          
           <button className="border border-black px-4 py-2 rounded-lg hover:bg-gray-100 transition sm:w-auto w-full hidden lg:block">
             Buat Event
           </button>
+          </Link>
           <Avatar/>
         </div>
       </div>

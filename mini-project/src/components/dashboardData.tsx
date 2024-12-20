@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useSession } from "@/components/context/useSession";
 
 export default function DashboardData() {
+  const { isAuth, user } = useSession();
   const [activeEvent, setActiveEvent] = useState<number>(0);
   const [deactiveEvent, setDeactiveEvent] = useState<number>(0);
   const [totalTransaction, setTotalTransaction] = useState<number>(0);
@@ -10,40 +12,54 @@ export default function DashboardData() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!isAuth || !user) {
+      setError("User not authenticated. Please log in.");
+      setLoading(false);
+      return;
+    }
+
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        // User ID bisa diubah sesuai kebutuhan atau diambil dari context/auth
-        const userId = 2;
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("No token found. Please log in.");
+        }
 
         const [activeEventRes, deactiveEventRes, totalTransactionRes] = await Promise.all([
-          fetch(`http://localhost:8000/api/dashboard/event-active/${userId}`),
-          fetch(`http://localhost:8000/api/dashboard/event-deactive/${userId}`),
-          fetch(`http://localhost:8000/api/dashboard/event-transaction/${userId}`),
+          fetch(`${process.env.NEXT_PUBLIC_BASE_URL_BE}/dashboard/event-active`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch(`${process.env.NEXT_PUBLIC_BASE_URL_BE}/dashboard/event-deactive`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch(`${process.env.NEXT_PUBLIC_BASE_URL_BE}/dashboard/event-transaction`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
         ]);
 
         if (!activeEventRes.ok || !deactiveEventRes.ok || !totalTransactionRes.ok) {
-          throw new Error("Failed to fetch dashboard data");
+          throw new Error("Failed to fetch dashboard data.");
         }
 
         const activeEventData = await activeEventRes.json();
         const deactiveEventData = await deactiveEventRes.json();
         const totalTransactionData = await totalTransactionRes.json();
 
-        setActiveEvent(activeEventData.activeEvent);
-        setDeactiveEvent(deactiveEventData.deactiveEvent);
-        setTotalTransaction(totalTransactionData.totalTransaction);
+        setActiveEvent(activeEventData.activeEvent || 0);
+        setDeactiveEvent(deactiveEventData.deactiveEvent || 0);
+        setTotalTransaction(totalTransactionData.totalTransaction || 0);
       } catch (err: any) {
-        setError(err.message || "Something went wrong");
+        setError(err.message || "Something went wrong.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchDashboardData();
-  }, []);
+  }, [isAuth, user]);
 
   if (loading) {
     return <div className="p-5 text-center">Loading...</div>;
@@ -91,4 +107,3 @@ export default function DashboardData() {
     </div>
   );
 }
-
