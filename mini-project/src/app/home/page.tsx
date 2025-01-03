@@ -19,9 +19,8 @@ export default async function HomePage() {
       </div>
       <div>
         <h1 className="container mx-auto pt-4 px-4 lg:px-0 text-xl font-medium text-codgray flex justify-between">
-          Spotlight Events
+          Upcoming Events
           <button className="text-base text-red hover:text-codgray flex items-center">
-            Sort by
             <span className="hover:text-red text-lg">
               <MdOutlineKeyboardArrowRight />
             </span>
@@ -41,7 +40,6 @@ export default async function HomePage() {
                 slug={item.slug}
                 username={item.organizer.username || "Unknown"}
                 location={item.location}
-               
               />
             </div>
           ))}

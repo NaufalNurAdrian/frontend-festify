@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
@@ -44,7 +43,7 @@ const RichTextEditor: React.FC<FieldRichTextProps> = ({ setFieldValue }) => {
 
   const handleChange = (e: string) => {
     setValue(e);
-    setFieldValue("content", e);
+    setFieldValue("description", e);
   };
 
   useEffect(() => {

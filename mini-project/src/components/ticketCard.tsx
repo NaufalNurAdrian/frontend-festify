@@ -8,10 +8,10 @@ interface TicketProps {
   type: string;
   price: number;
   seats: number;
-  ticketId: string;
+ ticket_id: number;
   lastOrder: string;
   onUpdateSeats: (
-    ticketId: string,
+    ticket_id: number,
     seatsToBuy: number,
     totalPrice: number,
     ticketType: string
@@ -22,7 +22,7 @@ const TicketCard: React.FC<TicketProps> = ({
   type,
   price,
   seats,
-  ticketId,
+  ticket_id,
   lastOrder,
   onUpdateSeats,
 }) => {
@@ -52,14 +52,14 @@ const TicketCard: React.FC<TicketProps> = ({
 
     const newSeatsToBuy = seatsToBuy + 1;
     setSeatsToBuy(newSeatsToBuy);
-    onUpdateSeats(ticketId, newSeatsToBuy, newSeatsToBuy * price, type);
+    onUpdateSeats(ticket_id, newSeatsToBuy, newSeatsToBuy * price, type);
   };
 
   const handleDecrease = () => {
     if (seatsToBuy > 0) {
       const newSeatsToBuy = seatsToBuy - 1;
       setSeatsToBuy(newSeatsToBuy);
-      onUpdateSeats(ticketId, newSeatsToBuy, newSeatsToBuy * price, type);
+      onUpdateSeats(ticket_id, newSeatsToBuy, newSeatsToBuy * price, type);
     }
   };
 

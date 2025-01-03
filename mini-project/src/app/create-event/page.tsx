@@ -1,20 +1,25 @@
 "use client";
+
+import RichTextEditor from "@/components/form/events/textEditor";
 import { useState } from "react";
+// Sesuaikan path sesuai lokasi file RichTextEditor
 
 const CreateEvent = () => {
   const [eventData, setEventData] = useState({
     title: "",
-    description: "",
+    description: "", // Gunakan description untuk React Quill
     location: "",
     startTime: "",
     endTime: "",
-    category: "",
+    category: "MUSIC",
     thumbnail: null as File | null,
   });
 
   const [tickets, setTickets] = useState([
     { type: "", price: 0, seats: 0, lastOrder: "" },
   ]);
+
+  const enumCategories = ["MUSIC", "FILM", "SPORT", "EDUCATION"];
 
   const handleEventChange = (
     e: React.ChangeEvent<
@@ -27,12 +32,12 @@ const CreateEvent = () => {
       const files = e.target.files;
       setEventData((prev) => ({
         ...prev,
-        [name]: files && files[0], // Ambil file pertama jika ada
+        [name]: files && files[0],
       }));
     } else {
       setEventData((prev) => ({
         ...prev,
-        [name]: value, // Untuk input selain file
+        [name]: value,
       }));
     }
   };
@@ -55,74 +60,95 @@ const CreateEvent = () => {
     setTickets(tickets.filter((_, i) => i !== index));
   };
 
-  const handleCreateEvent = async () => {
+  const handleCreateEventAndTickets = async () => {
     try {
       const formData = new FormData();
       Object.entries(eventData).forEach(([key, value]) => {
         formData.append(key, value as string | Blob);
       });
 
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No token found. Please Login.");
+      }
+
       const response = await fetch("http://localhost:8000/api/event/create/", {
         method: "POST",
         body: formData,
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const result = await response.json();
-      if (response.ok) {
-        alert(`Event created successfully! Event ID: ${result.event.event_id}`);
-      } else {
-        alert(`Error creating event: ${result.message}`);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Failed to create event.");
-    }
-  };
 
-  const handleCreateTickets = async (eventId: number) => {
-    try {
-      const response = await fetch(
-        `http://localhost:8000/api/event/create/ticket/${eventId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ tickets }),
+      if (response.ok) {
+        const eventId = result.event_id;
+
+        if (
+          tickets.some(
+            (ticket) =>
+              !ticket.type ||
+              !ticket.price ||
+              !ticket.seats ||
+              !ticket.lastOrder
+          )
+        ) {
+          alert("All ticket fields are required.");
+          return;
         }
-      );
 
-      const result = await response.json();
-      if (response.ok) {
-        alert("Tickets created successfully!");
+        const ticketResponse = await fetch(
+          `http://localhost:8000/api/event/create/ticket/${eventId}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ tickets }),
+          }
+        );
+
+        const ticketResult = await ticketResponse.json();
+
+        if (ticketResponse.ok) {
+          alert("Event and tickets created successfully!");
+        } else {
+          alert(`Error creating tickets: ${ticketResult.message}`);
+        }
       } else {
-        alert(`Error creating tickets: ${result.message}`);
+        alert("Error creating event");
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Failed to create tickets.");
+      alert("Failed to create event and tickets.");
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Create Event</h1>
-      <div className="space-y-4">
+
+      <div className="space-y-4 items-center pb-1">
+        <h1 className="font-semibold">Event Title</h1>
         <input
           type="text"
           name="title"
-          placeholder="Event Title"
+          placeholder="Title"
           value={eventData.title}
           onChange={handleEventChange}
-          className="w-full p-2 border border-gray-300 rounded"
+          className="w-full p-2 border border-gray-300 rounded my-2"
         />
-        <textarea
-          name="description"
-          placeholder="Description"
-          value={eventData.description}
-          onChange={handleEventChange}
-          className="w-full p-2 border border-gray-300 rounded"
+        {/* Gunakan RichTextEditor untuk mengatur description */}
+        <h1 className="font-semibold">Description</h1>
+        <RichTextEditor
+          setFieldValue={(field, value) =>
+            setEventData((prev) => ({
+              ...prev,
+              [field]: value,
+            }))
+          }
         />
+        <h1 className="font-semibold">Location</h1>
         <input
           type="text"
           name="location"
@@ -131,6 +157,7 @@ const CreateEvent = () => {
           onChange={handleEventChange}
           className="w-full p-2 border border-gray-300 rounded"
         />
+        <h1 className="font-semibold">Start & End Date Time</h1>
         <input
           type="datetime-local"
           name="startTime"
@@ -145,34 +172,35 @@ const CreateEvent = () => {
           onChange={handleEventChange}
           className="w-full p-2 border border-gray-300 rounded"
         />
+        <h1 className="font-semibold">Category Event</h1>
         <select
           name="category"
           value={eventData.category}
           onChange={handleEventChange}
           className="w-full p-2 border border-gray-300 rounded"
         >
-          <option value="MUSIC">MUSIC</option>
-          <option value="FILM">FILM</option>
-          <option value="SPORT">SPORT</option>
-          <option value="EDUCATION">EDUCATION</option>
+          {enumCategories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
         </select>
-        <input
-          type="file"
-          name="thumbnail"
-          onChange={handleEventChange}
-          className="w-full p-2"
-        />
-        <button
-          onClick={handleCreateEvent}
-          className="px-4 py-2 bg-blue-500 text-white rounded"
-        >
-          Create Event
-        </button>
+        <h1>
+          {" "}
+          <span className="font-semibold"> Thumbnail</span>
+          <input
+            type="file"
+            name="thumbnail"
+            onChange={handleEventChange}
+            className="w-full p-2"
+          />
+        </h1>
       </div>
 
       <h2 className="text-xl font-bold mt-6">Tickets</h2>
       {tickets.map((ticket, index) => (
         <div key={index} className="space-y-2 border p-4 rounded mb-4">
+          <h1 className="font-medium">Type Tickets</h1>
           <input
             type="text"
             placeholder="Type"
@@ -180,6 +208,7 @@ const CreateEvent = () => {
             onChange={(e) => handleTicketChange(index, "type", e.target.value)}
             className="w-full p-2 border border-gray-300 rounded"
           />
+          <h1 className="font-medium">Price</h1>
           <input
             type="number"
             placeholder="Price"
@@ -189,6 +218,7 @@ const CreateEvent = () => {
             }
             className="w-full p-2 border border-gray-300 rounded"
           />
+          <h1 className="font-medium">Ticket Stock</h1>
           <input
             type="number"
             placeholder="Seats"
@@ -198,6 +228,7 @@ const CreateEvent = () => {
             }
             className="w-full p-2 border border-gray-300 rounded"
           />
+          <h1 className="font-medium">Last Order for buy Ticket</h1>
           <input
             type="datetime-local"
             placeholder="Last Order"
@@ -215,18 +246,20 @@ const CreateEvent = () => {
           </button>
         </div>
       ))}
-      <button
-        onClick={addTicket}
-        className="px-4 py-2 bg-green-500 text-white rounded"
-      >
-        Add Ticket
-      </button>
-      <button
-        onClick={() => handleCreateTickets(1)} // Replace `1` with the actual event ID after creating event
-        className="px-4 py-2 bg-blue-500 text-white rounded mt-4"
-      >
-        Create Tickets
-      </button>
+      <div className="flex justify-between items-center">
+        <button
+          onClick={addTicket}
+          className="px-4 py-2 bg-red text-white rounded"
+        >
+          Add Ticket
+        </button>
+        <button
+          onClick={handleCreateEventAndTickets}
+          className="px-4 py-2 bg-red text-white rounded"
+        >
+          Create Event and Tickets
+        </button>
+      </div>
     </div>
   );
 };

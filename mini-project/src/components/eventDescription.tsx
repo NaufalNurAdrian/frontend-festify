@@ -7,7 +7,11 @@ interface EventDescriptionProps {
 const EventDescription: React.FC<EventDescriptionProps> = ({ description }) => {
   return (
     <div>
-      <p className="text-gray-700">{description}</p>
+      <div
+        className="text-gray-700"
+        dangerouslySetInnerHTML={{ __html: description }}
+      />
+
       <h3 className="mt-6 font-bold text-gray-800">Syarat & Ketentuan</h3>
       <ul className="list-disc list-inside mt-2 text-gray-600">
         <li>

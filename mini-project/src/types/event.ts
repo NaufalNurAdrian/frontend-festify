@@ -17,8 +17,8 @@ export interface IUser {
 }
 
 export interface ITicket {
-  ticket_id: string;
-  type: "STANDARD" | "VIP" | "VVIP" | "FREE";
+  ticket_id: number;
+  type: string;
   price: number;
   seats: number;
   createdAt: string;

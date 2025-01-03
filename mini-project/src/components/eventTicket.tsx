@@ -1,11 +1,10 @@
 import React from "react";
 import TicketCard from "@/components/ticketCard";
 import { ITicket } from "@/types/event";
-
 interface EventTicketProps {
   tickets: ITicket[];
   onUpdateSeats: (
-    ticketId: string,
+    ticket_id: number,
     seatsToBuy: number,
     newTotalPrice: number,
     ticketType: string
@@ -24,7 +23,7 @@ const EventTicket: React.FC<EventTicketProps> = ({
       {tickets.map((ticket) => (
         <TicketCard
           key={ticket.ticket_id}
-          ticketId={ticket.ticket_id}
+          ticket_id={ticket.ticket_id}
           type={ticket.type}
           price={ticket.price}
           seats={ticket.seats}
