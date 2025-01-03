@@ -17,6 +17,8 @@ interface SearchBarProps {
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ isMobile = false }) => {
+  const base_url = process.env.NEXT_PUBLIC_BASE_URL_BE;
+
   const [searchVisible, setSearchVisible] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -25,10 +27,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ isMobile = false }) => {
   const [value, setValue] = useState<string>(searchParams.get("keyword") || "");
   const [text] = useDebounce(value, 500);
   const [isLoading, setIsloading] = useState<boolean>(false);
+
   const getData = async () => {
     try {
       setIsloading(true);
-      const res = await fetch(`http://localhost:8000/api/event?search=${text}`);
+      const res = await fetch(`${base_url}/event?search=${text}`);
       const result = await res.json();
       setEvents(result.events);
     } catch (err) {
@@ -114,7 +117,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ isMobile = false }) => {
                       {events.map((item, idx) => (
                         <li
                           key={idx}
-                          data-cy="blog-item"
+                          data-cy="event-item"
                           className="p-2 hover:bg-gray-100"
                         >
                           {item.title}
@@ -148,25 +151,25 @@ const SearchBar: React.FC<SearchBarProps> = ({ isMobile = false }) => {
           {isLoading ? (
             <div className="loader"></div>
           ) : events.length === 0 ? (
-            <ul className="absolute z-10 w-96 bg-white mt-32 opacity-80 rounded-md shadow-lg">
+            <ul className="absolute z-10 w-96 bg-white mt-28 opacity-80 rounded-md shadow-lg ">
               <li className="p-4 hover:bg-gray-200 rounded-md opacity-100 ">
                 Not found
               </li>
             </ul>
           ) : (
-            <ul className="absolute z-10 w-96 bg-white mt-32 opacity-90 rounded-md shadow-lg">
+            <ul className="absolute z-10 w-96 bg-white opacity-90 rounded-md shadow-lg top-14 ">
               {events.map((item, idx) => (
                 <li
                   key={idx}
                   data-cy="blog-item"
-                  className="p-2 hover:bg-gray-200 rounded-md flex gap-4 items-start"
+                  className="p-2 hover:bg-gray-200 rounded-md flex gap-4 items-start py-3"
                 >
                   <img
                     src={item.thumbnail}
                     alt="xx"
                     width={100}
                     height={100}
-                    className="rounded-md"
+                    className="rounded-md "
                   />
                   <Link href={`/event/${item.slug}`}>
                     <div className="flex flex-col justify-start">

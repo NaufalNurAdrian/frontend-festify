@@ -1,9 +1,8 @@
-import { IEvent } from "@/types/event";
-import axios from "axios";
+const base_url = process.env.NEXT_PUBLIC_BASE_URL_BE;
 
 export const getEvent = async () => {
-  const res = await fetch(`http://localhost:8000/api/event`, {
-    next: { revalidate: 60 },
+  const res = await fetch(`${base_url}/event`, {
+    next: { revalidate: 10 },
   });
   const data = await res.json();
   return data.events;
@@ -12,8 +11,8 @@ export const getEvent = async () => {
 // libs/events.ts
 
 export const getEventSlug = async (slug: string) => {
-  const res = await fetch(`http://localhost:8000/api/event/${slug}`, {
-    next: { revalidate: 60 }, // Opsional: Hapus atau sesuaikan sesuai kebutuhan
+  const res = await fetch(`${base_url}/event/${slug}`, {
+    next: { revalidate: 10 }, // Opsional: Hapus atau sesuaikan sesuai kebutuhan
   });
 
   if (!res.ok) {

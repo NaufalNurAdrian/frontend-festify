@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@tailwind variants;
 
 body {
   background-color: whitesmoke;
@@ -69,11 +70,8 @@ body {
   /* Warna progress bar oranye terang */
 }
 
-/* Animasi untuk toast */
-.Toastify__bounce-enter {
-  animation: ease-in 0.5s ease-out;
-}
-
-.Toastify__bounce-exit {
-  animation: ease-out 0.5s ease-in;
+/* globals.css */
+.react-datepicker {
+  background-color: white !important;
+  color: #374151 !important; /* Warna teks abu-abu untuk light mode */
 }

@@ -28,7 +28,10 @@ const EventCard: React.FC<IEventCard> = ({
 
         <div className="p-4">
           <h3 className="text-lg font-bold text-gray-800 truncate">{title}</h3>
-          <p className="text-sm text-gray-500">{description}</p>
+          <div
+            className="text-sm text-gray-500 line-clamp-3"
+            dangerouslySetInnerHTML={{ __html: description }}
+          />
           <p className="mt-2 text-base font-semibold text-gray-800"></p>
           <p className="text-sm text-gray-500 flex items-center gap-2 pb-4">
             <FaMapMarkerAlt className="text-gray-400 flex" />
@@ -39,7 +42,7 @@ const EventCard: React.FC<IEventCard> = ({
             <img
               src={avatar}
               alt="avatar"
-              className="w-8 h-8 rounded-full mr-3"
+              className="w-8 h-7 rounded-full mr-3"
             />
             <span>{username}</span>
           </p>

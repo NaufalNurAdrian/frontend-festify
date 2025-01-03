@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "typeRoots": ["./node_modules/@types", "./src/types"],
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -23,6 +24,12 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/chart.jsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/components/chart.jsx"
+  ],
   "exclude": ["node_modules"]
 }

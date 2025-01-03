@@ -24,7 +24,7 @@ export default function Navbar() {
         {/* navigation */}
         <div className=" hidden lg:flex items-center space-x-6 text-sm text-gray-700 md:ml-4">
           <Link
-            href="/dashboard/create-event"
+            href="/create-event"
             className="hover:text-gray-900 whitespace-nowrap "
           >
             Create Events
@@ -75,7 +75,7 @@ export default function Navbar() {
                   Create Event
                 </Link>
                 <Link
-                  href="/dashboard/create-event"
+                  href="/create-event"
                   className="text-sm text-gray-700 hover:text-gray-900 py-2 text-start"
                 >
                   Explore

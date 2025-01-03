@@ -25,5 +25,13 @@ export default async function EventDetail({
 }) {
   const data: IEvent = await getEventSlug(params.slug);
 
-  return <EventTabs data={data} />;
+  return (
+    <EventTabs
+      data={data}
+      ticketResult={[]}
+      params={{
+        event_id: "",
+      }}
+    />
+  );
 }
