@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -8,14 +9,31 @@ import {
   MdOutlineKeyboardArrowLeft,
   MdOutlineKeyboardArrowRight,
 } from "react-icons/md";
+import { IEvent } from "@/types/event";
+
+// Fungsi untuk mengambil data event dari API
+const getEvent = async () => {
+  const base_url = process.env.NEXT_PUBLIC_BASE_URL_BE;
+  const res = await fetch(`${base_url}/event`, {
+    next: { revalidate: 10 },
+  });
+  const data = await res.json();
+  return data.events;
+};
 
 export default function Carousel() {
-  const images = [
-    "/BannerTerrifier3.jpg",
-    "/BannerDWP.jpg",
-    "/BannerROC.jpg",
-    "/BannerCAS.jpg",
-  ];
+  const [images, setImages] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Ambil data event dan ekstrak thumbnail
+    const fetchEvents = async () => {
+      const events = await getEvent();
+      const thumbnails = events.map((event: IEvent) => event.thumbnail); // Ambil hanya thumbnail
+      setImages(thumbnails);
+    };
+
+    fetchEvents();
+  }, []);
 
   return (
     <div className="w-full flex justify-center py-8 bg-red relative group">
