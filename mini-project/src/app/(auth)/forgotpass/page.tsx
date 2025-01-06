@@ -57,7 +57,7 @@ export default function ForgotPass() {
                   setIsLoading(true);
                   try {
                     // Kirim permintaan ke server
-                    const response = await axios.post(
+                    await axios.post(
                       "http://localhost:8000/api/users/verify-forgot",
                       values
                     );

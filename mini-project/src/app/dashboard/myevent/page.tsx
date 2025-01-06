@@ -1,9 +1,8 @@
 "use client"
-
 import React, { useEffect, useState } from "react";
 import EventCard from "@/components/cardevent";
 import authGuard from "@/hoc/authGuard";
-import { getEvent, getEventCompleted } from "@/libs/events";
+import { getEventCompleted, getEventUser } from "@/libs/events";
 import { IEvent } from "@/types/event";
 
 const MyEventPage = () => {
@@ -14,7 +13,7 @@ const MyEventPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const activeEvents = await getEvent();
+        const activeEvents = await getEventUser();
         const completedEvents = await getEventCompleted();
         setData(activeEvents);
         setDataEvetCompleted(completedEvents);
@@ -33,7 +32,7 @@ const MyEventPage = () => {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col p-5">
       <div>
         <div>
           <h1 className="text-2xl font-bold">Event Active</h1>
@@ -46,11 +45,14 @@ const MyEventPage = () => {
                 <EventCard
                   thumbnail={item.thumbnail}
                   title={item.title}
-                  avatar={item.organizer.avatar}
+                  avatar={item.organizer.avatar || "/festifylogo.png"}
                   description={item.description}
                   slug={item.slug}
                   username={item.organizer.username || "Unknown"}
                   location={item.location}
+                  price={Math.min(
+                    ...(item.Ticket?.map((ticket) => ticket.price) ?? [0])
+                  )}
                 />
               </div>
             ))}
@@ -68,11 +70,14 @@ const MyEventPage = () => {
                 <EventCard
                   thumbnail={item.thumbnail}
                   title={item.title}
-                  avatar={item.organizer.avatar}
+                  avatar={item.organizer.avatar || "/festifylogo.png"}
                   description={item.description}
                   slug={item.slug}
                   username={item.organizer.username || "Unknown"}
                   location={item.location}
+                  price={Math.min(
+                    ...(item.Ticket?.map((ticket) => ticket.price) ?? [0])
+                  )}
                 />
               </div>
             ))}
