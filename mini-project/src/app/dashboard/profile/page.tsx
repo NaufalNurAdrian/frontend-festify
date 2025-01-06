@@ -38,56 +38,66 @@ function AdminProfile() {
   };
 
   // Handle avatar change
-  const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const file = event.target.files?.[0];
+  if (!file) return;
 
-    const formData = new FormData();
-    formData.append("avatar", file);
+  Swal.fire({
+    title: "Are you sure?",
+    text: "Do you want to update your avatar?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Yes, update it!",
+    cancelButtonText: "Cancel",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      const formData = new FormData();
+      formData.append("avatar", file);
 
-    try {
-      setIsLoading(true);
+      try {
+        setIsLoading(true);
 
-      const token = localStorage.getItem("token");
-      if (!token) {
-        Swal.fire("Error", "Please log in to update your profile.", "error");
-        return;
-      }
+        const token = localStorage.getItem("token");
+        if (!token) {
+          Swal.fire("Error", "Please log in to update your profile.", "error");
+          return;
+        }
 
-      const response = await fetch(`${base_url}/users/avatar`, {
-        method: "PATCH",
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+        const response = await fetch(`${base_url}/users/avatar`, {
+          method: "PATCH",
+          body: formData,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-      if (response.ok) {
-        Swal.fire(
-          "Success!",
-          "Your profile picture has been updated successfully!",
-          "success"
-        ).then(() => window.location.reload());
-      } else {
+        if (response.ok) {
+          Swal.fire(
+            "Success!",
+            "Your profile picture has been updated successfully!",
+            "success"
+          ).then(() => window.location.reload());
+        } else {
+          Swal.fire(
+            "Error!",
+            "Failed to update your profile picture. Please try again later.",
+            "error"
+          );
+        }
+      } catch (error) {
+        console.error("Error updating avatar:", error);
         Swal.fire(
           "Error!",
-          "Failed to update your profile picture. Please try again later.",
+          "Something went wrong. Please try again later.",
           "error"
         );
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error updating avatar:", error);
-      Swal.fire(
-        "Error!",
-        "Something went wrong. Please try again later.",
-        "error"
-      );
-    } finally {
-      setIsLoading(false);
     }
-  };
+  });
+};
+
 
   const triggerFileInput = () => {
     if (fileInputRef.current) {
@@ -111,7 +121,7 @@ function AdminProfile() {
     };
 
     fetchData();
-  }, [checkSession]);
+  }, []);
 
   if (!user) {
     return (
@@ -172,7 +182,7 @@ function AdminProfile() {
                 </div>
                 <div className="mb-4">
                   <h2 className="text-lg font-semibold text-gray-900">Points</h2>
-                  <p className="text-gray-600">{points || "Not Available"}</p>
+                  <p className="text-gray-600">{points || 0 }</p>
                 </div>
                 <div className="mb-4">
                   <h2 className="text-lg font-semibold text-gray-900">Referral Code</h2>

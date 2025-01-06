@@ -18,6 +18,7 @@ export default function FooterExcept() {
     "/dashboard/profile",
     "/dashboard/create",
     "/dashboard/myevent",
+    "/dashboard/myticket",
     "/dashboard/settings",
     "/signup",
     "/transactions",

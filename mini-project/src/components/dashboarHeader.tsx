@@ -22,7 +22,7 @@ export default function DashboardHeader () {
         <h2 className="text-lg font-bold sm:text-xl">Home</h2>
         </div>
         <div className="flex gap-4 flex-wrap mt-2 sm:mt-0">
-          <Link href="/dashboard/create">
+          <Link href="/create-event">
           
           <button className="border border-black px-4 py-2 rounded-lg hover:bg-gray-100 transition sm:w-auto w-full hidden lg:block">
             Buat Event

@@ -32,7 +32,7 @@ export default function VerifyPage({ params }: { params: { token: string } }) {
     setIsLoading(true);
     try {
       // Kirim permintaan PATCH ke endpoint API dengan token
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_BE}/users/forgot-password`, {
+      await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_BE}/users/forgot-password`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

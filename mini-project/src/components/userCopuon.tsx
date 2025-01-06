@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Swal from "sweetalert2";
 
 type Coupon = {
   discountAmount: number;
@@ -35,13 +34,6 @@ export default function UserCoupon() {
 
         if (response.data.coupon) {
           setCoupon(response.data.coupon);
-        } else {
-          Swal.fire({
-            title: "No Coupon Available",
-            text: "You don't have any available coupons at the moment.",
-            icon: "info",
-            confirmButtonText: "OK",
-          });
         }
       } catch (err) {
         console.error("Error fetching coupon:", err);
