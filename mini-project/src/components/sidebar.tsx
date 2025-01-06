@@ -10,15 +10,25 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
 export default function Sidebar() {
-  const [role, setRole] = useState(
-    localStorage.getItem("role") || "CUSTOMER"
-  );
+  const [role, setRole] = useState("CUSTOMER"); // Nilai awal default
   const [loading, setLoading] = useState(false);
+
+  // Mengambil role dari localStorage hanya di sisi klien
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedRole = localStorage.getItem("role");
+      if (savedRole) {
+        setRole(savedRole);
+      }
+    }
+  }, []);
 
   const changeRole = (newRole: string) => {
     setLoading(true);
     try {
-      localStorage.setItem("role", newRole); // Simpan role ke localStorage
+      if (typeof window !== "undefined") {
+        localStorage.setItem("role", newRole); // Simpan role ke localStorage
+      }
       setRole(newRole); // Update state local
     } catch (err) {
       console.error(err);
@@ -28,16 +38,8 @@ export default function Sidebar() {
     }
   };
 
-  useEffect(() => {
-    // Memuat peran dari localStorage jika ada perubahan di localStorage.
-    const savedRole = localStorage.getItem("role");
-    if (savedRole) {
-      setRole(savedRole);
-    }
-  }, []);
-
   return (
-    <div className="bg-codgray text-white rounded-r-xl h-screen w-52 p-2 hidden lg:block">
+    <div className="bg-codgray text-white rounded-r-xl h-screen w-52 p-2 hidden lg:block fixed">
       <div className="flex justify-center text-3xl font-extrabold mb-8 text-red mt-2">
         <Link href="/">Festify.</Link>
       </div>
@@ -63,7 +65,7 @@ export default function Sidebar() {
         )}
         {role === "CUSTOMER" && (
           <div>
-            <Link href="/dashboard" className="hover:text-white">
+            <Link href="/dashboard/myticket" className="hover:text-white">
               <div className="flex p-2 items-center rounded-md h-8 hover:bg-slate-800 gap-5">
                 <LuTicket /> My Ticket
               </div>

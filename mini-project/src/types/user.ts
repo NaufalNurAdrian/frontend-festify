@@ -4,5 +4,6 @@ export interface IUser {
     email: string
     points: number
     avatar: string
+    referralCode: string
     role: "CUSTOMER" | "ORGANIZER"
 }

@@ -5,8 +5,10 @@ import { formatDate } from "@/helpers/formatDate";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { useSession } from "@/components/context/useSession";
+import UserCoupon from "@/components/userCopuon";
+import authGuard from "@/hoc/authGuard";
 
-export default function AdminProfile() {
+function AdminProfile() {
   const base_url = process.env.NEXT_PUBLIC_BASE_URL_BE;
   const { user, checkSession, logout } = useSession();
   const [lastLogin, setLastLogin] = useState<string | null>(null);
@@ -14,13 +16,11 @@ export default function AdminProfile() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Modal
+  // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const token = localStorage.getItem("token");
-
-  // Logout
+  // Handle logout
   const handleLogout = () => {
     Swal.fire({
       title: "Are you sure?",
@@ -37,7 +37,7 @@ export default function AdminProfile() {
     });
   };
 
-  // Ganti Avatar
+  // Handle avatar change
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -49,42 +49,41 @@ export default function AdminProfile() {
 
     try {
       setIsLoading(true);
-      console.log("Uploading file...");
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        Swal.fire("Error", "Please log in to update your profile.", "error");
+        return;
+      }
 
       const response = await fetch(`${base_url}/users/avatar`, {
         method: "PATCH",
         body: formData,
         headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          Authorization: `Bearer ${token}`,
+        },
       });
 
-      console.log("Response Status:", response.status);
-
-      if (response.status >= 200 && response.status < 300) {
-        Swal.fire({
-          title: "Success!",
-          text: "Your profile picture has been updated successfully!",
-          icon: "success",
-          confirmButtonText: "OK",
-        }).then(() => window.location.reload());
+      if (response.ok) {
+        Swal.fire(
+          "Success!",
+          "Your profile picture has been updated successfully!",
+          "success"
+        ).then(() => window.location.reload());
       } else {
-        console.error("Unexpected response status:", response.status);
-        Swal.fire({
-          title: "Error!",
-          text: "Something went wrong while updating your profile. Please try again later.",
-          icon: "error",
-          confirmButtonText: "OK",
-        });
+        Swal.fire(
+          "Error!",
+          "Failed to update your profile picture. Please try again later.",
+          "error"
+        );
       }
     } catch (error) {
       console.error("Error updating avatar:", error);
-      Swal.fire({
-        title: "Error!",
-        text: "Failed to update your profile picture. Please try again later.",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
+      Swal.fire(
+        "Error!",
+        "Something went wrong. Please try again later.",
+        "error"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -97,7 +96,7 @@ export default function AdminProfile() {
     }
   };
 
-  // Login nemu dari konsulting mas mas chatGPT
+  // Fetch session and last login data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -105,32 +104,31 @@ export default function AdminProfile() {
         const now = new Date();
         const formattedNow = now.toISOString();
         localStorage.setItem("lastLogin", formattedNow);
-        setLastLogin(formatDate(now.toISOString()));
+        setLastLogin(formatDate(formattedNow));
       } catch (err) {
-        console.error("Failed to fetch promotor session or last login:", err);
+        console.error("Failed to fetch session or last login:", err);
       }
     };
 
     fetchData();
-  }, []);
+  }, [checkSession]);
 
   if (!user) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-slate-100 text-black">
-        <h1 className="text-3xl font-bold">No Promotor Data Found</h1>
+      <div className="flex justify-center items-center min-h-screen bg-gray-100 text-gray-800">
+        <h1 className="text-3xl font-bold">No Promoter Data Found</h1>
       </div>
     );
   }
 
-  const { username, email, avatar } = user;
+  const { username, email, avatar, points, referralCode } = user;
 
-  // Modal usaha 2 miliar
+  // Modal handlers
   const openModal = (imageUrl: string) => {
     setSelectedImage(imageUrl);
     setIsModalOpen(true);
   };
 
-  // Modal nya bangkrut
   const closeModal = () => {
     setSelectedImage(null);
     setIsModalOpen(false);
@@ -138,26 +136,22 @@ export default function AdminProfile() {
 
   return (
     <>
-      <div className="flex min-h-screen bg-slate-200 text-black">
+      <div className="flex flex-col min-h-screen bg-gray-100 text-gray-800 p-5">
         <div className="flex-1 px-6 py-6">
-          <div className="bg-slate-100 rounded-lg shadow-lg p-6">
-            <h1 className="text-3xl font-bold mb-4 text-center">
-              Profile
-            </h1>
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h1 className="text-3xl font-bold mb-6 text-center text-gray-900">Profile</h1>
             <div className="flex flex-col items-center lg:gap-8">
               {/* Profile Avatar */}
-              <div className="flex-shrink-0">
+              <div className="relative">
                 <img
                   src={avatar || "/festifylogo.png"}
                   alt="Avatar"
-                  className="w-[20vw] h-60 rounded-lg border-2 border-glow shadow-lg cursor-pointer"
-                  onClick={() =>
-                    openModal(avatar || "/festifylogo.png")
-                  }
+                  className="w-40 h-40 rounded-full border-4 border-red shadow-lg cursor-pointer hover:opacity-90"
+                  onClick={() => openModal(avatar || "/festifylogo.png")}
                 />
               </div>
 
-              {/* Input foto */}
+              {/* File Input (Hidden) */}
               <input
                 ref={fileInputRef}
                 type="file"
@@ -166,34 +160,40 @@ export default function AdminProfile() {
                 onChange={handleFileChange}
               />
 
-              {/* Profil */}
-              <div className="mt-4 lg:mt-0 flex-col items-center">
-                <div className="mb-4 text-center">
-                  <h2 className="text-xl font-semibold">Username</h2>
-                  <p className="text-gray-400">{username || "Not Available"}</p>
+              {/* Profile Info */}
+              <div className="mt-6 text-center">
+                <div className="mb-4">
+                  <h2 className="text-lg font-semibold text-gray-900">Username</h2>
+                  <p className="text-gray-600">{username || "Not Available"}</p>
                 </div>
-                <div className="mb-4 text-center">
-                  <h2 className="text-xl font-semibold">Email</h2>
-                  <p className="text-gray-400">{email || "Not Available"}</p>
+                <div className="mb-4">
+                  <h2 className="text-lg font-semibold text-gray-900">Email</h2>
+                  <p className="text-gray-600">{email || "Not Available"}</p>
                 </div>
-                <div className="mb-4 text-center">
-                  <h2 className="text-xl font-semibold">Last Login</h2>
-                  <p className="text-gray-400">
-                    {lastLogin || "Not Available"}
-                  </p>
+                <div className="mb-4">
+                  <h2 className="text-lg font-semibold text-gray-900">Points</h2>
+                  <p className="text-gray-600">{points || "Not Available"}</p>
+                </div>
+                <div className="mb-4">
+                  <h2 className="text-lg font-semibold text-gray-900">Referral Code</h2>
+                  <p className="text-gray-600">{referralCode || "Not Available"}</p>
+                </div>
+                <div className="mb-4">
+                  <h2 className="text-lg font-semibold text-gray-900">Last Login</h2>
+                  <p className="text-gray-600">{lastLogin || "Not Available"}</p>
                 </div>
               </div>
             </div>
 
-            {/*  Buttons */}
-            <div className="mt-6 text-center space-x-4">
+            {/* Action Buttons */}
+            <div className="mt-6 flex justify-center gap-4">
               <button
                 onClick={triggerFileInput}
                 disabled={isLoading}
-                className={`px-4 py-2 rounded-md text-white font-semibold ${
+                className={`px-4 py-2 rounded-md text-white font-semibold transition-colors duration-300 ${
                   isLoading
-                    ? "bg-rose-500 cursor-not-allowed"
-                    : "bg-red hover:bg-rose-600"
+                    ? "bg-blue-400 cursor-not-allowed"
+                    : "bg-red hover:bg-rose-500"
                 }`}
                 aria-label="Edit Photos"
               >
@@ -201,7 +201,7 @@ export default function AdminProfile() {
               </button>
               <button
                 onClick={handleLogout}
-                className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md text-black font-semibold"
+                className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md text-red font-semibold transition-colors duration-300"
                 aria-label="Logout"
               >
                 Logout
@@ -209,11 +209,16 @@ export default function AdminProfile() {
             </div>
           </div>
         </div>
+
+        {/* Coupon Section */}
+        <div className="mt-6 px-6">
+          <UserCoupon />
+        </div>
       </div>
 
-      {/* Modal gambar ajah */}
+      {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
           <div className="relative">
             <img
               src={selectedImage!}
@@ -222,7 +227,7 @@ export default function AdminProfile() {
             />
             <button
               onClick={closeModal}
-              className="absolute top-4 right-4 text-black text-3xl"
+              className="absolute top-4 right-4 text-white text-2xl font-bold hover:text-gray-300"
             >
               &times;
             </button>
@@ -232,3 +237,4 @@ export default function AdminProfile() {
     </>
   );
 }
+ export default authGuard(AdminProfile)

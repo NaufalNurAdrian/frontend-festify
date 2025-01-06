@@ -12,6 +12,7 @@ import axios from "axios";
 export default function VerifyPage({ params }: { params: { token: string } }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  
 
   const ForgotPassSchema = Yup.object().shape({
     password: Yup.string()
@@ -31,10 +32,16 @@ export default function VerifyPage({ params }: { params: { token: string } }) {
     setIsLoading(true);
     try {
       // Kirim permintaan PATCH ke endpoint API dengan token
-      const response = await axios.patch(
-        `http://localhost:8000/api/users/forgot-password/${params.token}`,
-        values
-      );
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_BE}/users/forgot-password`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: params.token,
+          newPassword: values.password
+        }),
+      });
 
       // Tampilkan pesan keberhasilan
       toast.success( "Password updated successfully!");
