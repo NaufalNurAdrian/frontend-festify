@@ -10,8 +10,9 @@ import Image from "next/image";
 import { FaClock } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import { SlCalender } from "react-icons/sl";
+import authGuard from "@/hoc/authGuard";
 
-export default function OrderPage({
+function OrderPage({
   params,
 }: {
   params: { transaction_id: string };
@@ -164,3 +165,5 @@ export default function OrderPage({
     </main>
   );
 }
+
+export default authGuard(OrderPage)

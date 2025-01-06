@@ -7,6 +7,13 @@ export const getEvent = async () => {
   const data = await res.json();
   return data.events;
 };
+export const getEventCompleted = async () => {
+  const res = await fetch(`${base_url}/event/completed`, {
+    next: { revalidate: 10 },
+  });
+  const data = await res.json();
+  return data.events;
+};
 
 // libs/events.ts
 

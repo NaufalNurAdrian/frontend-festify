@@ -1,6 +1,7 @@
 "use client";
 
 import RichTextEditor from "@/components/form/events/textEditor";
+import authGuard from "@/hoc/authGuard";
 import { useState } from "react";
 // Sesuaikan path sesuai lokasi file RichTextEditor
 
@@ -264,4 +265,4 @@ const CreateEvent = () => {
   );
 };
 
-export default CreateEvent;
+export default authGuard(CreateEvent);

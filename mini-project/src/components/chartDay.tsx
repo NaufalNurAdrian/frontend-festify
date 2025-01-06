@@ -6,15 +6,15 @@ import axios from "axios";
 
 // Define the type of API response
 type IncomeData = {
-  year: string; // Format: YYYY
+  date: string;
   totalIncome: number;
 };
 
 type ApiResponse = {
-  incomePerYear: IncomeData[];
+  incomePerDay: IncomeData[];
 };
 
-export default function IncomePerYearChart() {
+export default function IncomePerDayChart() {
   const [uData, setUData] = useState<number[]>([]);
   const [xLabels, setXLabels] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,17 +30,16 @@ export default function IncomePerYearChart() {
         if (!token) {
           throw new Error("No token found. Please log in.");
         }
-
+        
         const response = await axios.get<ApiResponse>(
-          `${process.env.NEXT_PUBLIC_BASE_URL_BE}/dashboard/payments/total-income/year`,
-          {
+          `${process.env.NEXT_PUBLIC_BASE_URL_BE}/dashboard/payments/total-income/day`,{
             headers: { Authorization: `Bearer ${token}` },
           }
         );
 
-        const incomeData = response.data.incomePerYear;
-        const labels = incomeData.map((item) => item.year); // x-axis: Year (YYYY)
-        const data = incomeData.map((item) => item.totalIncome); // y-axis: Total Income
+        const incomeData = response.data.incomePerDay;
+        const labels = incomeData.map((item) => item.date);
+        const data = incomeData.map((item) => item.totalIncome);
 
         setXLabels(labels);
         setUData(data);
@@ -65,7 +64,7 @@ export default function IncomePerYearChart() {
 
   return (
     <LineChart
-      className="p-5"
+    className="p-5"
       width={600}
       height={300}
       series={[{ data: uData, label: "Income", area: true, showMark: false }]}

@@ -6,15 +6,15 @@ import axios from "axios";
 
 // Define the type of API response
 type IncomeData = {
-  year: string; // Format: YYYY
+  month: string; // Format: YYYY-MM
   totalIncome: number;
 };
 
 type ApiResponse = {
-  incomePerYear: IncomeData[];
+  incomePerMonth: IncomeData[];
 };
 
-export default function IncomePerYearChart() {
+export default function IncomePerMonthChart() {
   const [uData, setUData] = useState<number[]>([]);
   const [xLabels, setXLabels] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,14 +32,14 @@ export default function IncomePerYearChart() {
         }
 
         const response = await axios.get<ApiResponse>(
-          `${process.env.NEXT_PUBLIC_BASE_URL_BE}/dashboard/payments/total-income/year`,
+          `${process.env.NEXT_PUBLIC_BASE_URL_BE}/dashboard/payments/total-income/month`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
 
-        const incomeData = response.data.incomePerYear;
-        const labels = incomeData.map((item) => item.year); // x-axis: Year (YYYY)
+        const incomeData = response.data.incomePerMonth;
+        const labels = incomeData.map((item) => item.month); // x-axis: Month (YYYY-MM)
         const data = incomeData.map((item) => item.totalIncome); // y-axis: Total Income
 
         setXLabels(labels);

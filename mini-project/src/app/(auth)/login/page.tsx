@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "@/components/context/useSession";
 import { Input } from "@/components/form/input";
 import Image from "next/image";
+import Link from "next/link";
 
 const LoginSchema = Yup.object().shape({
   data: Yup.string().required("Username or Email is required!"),
@@ -104,6 +105,14 @@ export default function Login() {
                     label="Password :"
                     type="password"
                   />
+                  <Link
+                  href="/forgotpass"
+                  >
+                  
+                  <div className="text-black text-sm">
+                    Forgot Password
+                  </div>
+                  </Link>
                   <button
                     type="submit"
                     disabled={isLoading}
