@@ -12,6 +12,8 @@ import {
   FiCalendar,
 } from "react-icons/fi";
 import { FaTicketAlt, FaTags, FaImage } from "react-icons/fa";
+import { toast } from "react-toastify";
+import Router from "next/router";
 
 const CreateEvent = () => {
   const [eventData, setEventData] = useState({
@@ -130,16 +132,16 @@ const CreateEvent = () => {
         const ticketResult = await ticketResponse.json();
 
         if (ticketResponse.ok) {
-          alert("Event and tickets created successfully!");
+          toast.success("Event and tickets created successfully!");
+          Router.push("/dashboard");
         } else {
-          alert(`Error creating tickets: ${ticketResult.message}`);
+          toast.error(`Error creating tickets: ${ticketResult.message}`);
         }
       } else {
-        alert("Error creating event");
+        toast.error("Error creating event");
       }
     } catch (error) {
-      console.error("Error:", error);
-      alert("Failed to create event and tickets.");
+      toast.error("Failed to create event and tickets.");
     }
   };
 

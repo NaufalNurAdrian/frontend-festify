@@ -54,9 +54,9 @@ export default function Register() {
       const result = await res.json();
       if (!res.ok) throw result;
       toast.success(result.message);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      toast.error(err.message || "Failed to register.");
+      toast.error("Failed to register.");
     } finally {
       setIsLoading(false);
     }
@@ -64,7 +64,9 @@ export default function Register() {
 
   return (
     <div className="container mx-auto flex flex-col h-screen">
-      <div className="text-center text-3xl font-extrabold text-red pt-10">Festify.</div>
+      <div className="text-center text-3xl font-extrabold text-red pt-10">
+        Festify.
+      </div>
       <div className="flex flex-row h-full">
         {/* Left Section */}
         <div className="md:flex-1 flex-col items-center justify-center hidden lg:flex">
@@ -95,7 +97,10 @@ export default function Register() {
                     <Form className="w-full max-w-md flex flex-col gap-4">
                       {/* Username Field */}
                       <div>
-                        <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                        <label
+                          htmlFor="username"
+                          className="block text-sm font-medium text-gray-700"
+                        >
                           Username
                         </label>
                         <Field
@@ -108,13 +113,18 @@ export default function Register() {
                           placeholder="Enter your username"
                         />
                         {touched.username && errors.username && (
-                          <p className="text-red-500 text-xs mt-1">{errors.username}</p>
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.username}
+                          </p>
                         )}
                       </div>
 
                       {/* Email Field */}
                       <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                        <label
+                          htmlFor="email"
+                          className="block text-sm font-medium text-gray-700"
+                        >
                           Email
                         </label>
                         <Field
@@ -127,13 +137,18 @@ export default function Register() {
                           placeholder="Enter your email"
                         />
                         {touched.email && errors.email && (
-                          <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.email}
+                          </p>
                         )}
                       </div>
 
                       {/* Password Field */}
                       <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                        <label
+                          htmlFor="password"
+                          className="block text-sm font-medium text-gray-700"
+                        >
                           Password
                         </label>
                         <Field
@@ -146,13 +161,18 @@ export default function Register() {
                           placeholder="Enter your password"
                         />
                         {touched.password && errors.password && (
-                          <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.password}
+                          </p>
                         )}
                       </div>
 
                       {/* Confirm Password Field */}
                       <div>
-                        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                        <label
+                          htmlFor="confirmPassword"
+                          className="block text-sm font-medium text-gray-700"
+                        >
                           Confirm Password
                         </label>
                         <Field
@@ -165,13 +185,18 @@ export default function Register() {
                           placeholder="Confirm your password"
                         />
                         {touched.confirmPassword && errors.confirmPassword && (
-                          <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.confirmPassword}
+                          </p>
                         )}
                       </div>
 
                       {/* Referral Code Field */}
                       <div>
-                        <label htmlFor="referralCode" className="block text-sm font-medium text-gray-700">
+                        <label
+                          htmlFor="referralCode"
+                          className="block text-sm font-medium text-gray-700"
+                        >
                           Referral Code (Optional)
                         </label>
                         <Field

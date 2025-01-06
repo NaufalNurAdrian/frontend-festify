@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link"; // Import Link dari Next.js
 
 import { BiMusic } from "react-icons/bi";
-import { BsThreeDots } from "react-icons/bs";
 import { CgGames } from "react-icons/cg";
 import { GiFilmProjector } from "react-icons/gi";
 import { MdOutlineSportsVolleyball } from "react-icons/md";
@@ -15,6 +14,11 @@ interface Category {
   label: string;
   icon: React.ReactNode;
   count?: number;
+}
+
+interface Event {
+  category: string;
+  // Add other properties of the event object if needed
 }
 
 export default function CategoryCards() {
@@ -53,7 +57,7 @@ export default function CategoryCards() {
 
         // Kelompokkan event berdasarkan kategori dan hitung jumlahnya
         const categoryCounts = events.reduce(
-          (acc: Record<string, number>, event: any) => {
+          (acc: Record<string, number>, event: Event) => {
             const category = event.category; // Ambil kategori dari event
             // Hanya hitung kategori yang ada di dalam `allCategories`
             if (
@@ -84,7 +88,7 @@ export default function CategoryCards() {
     };
 
     fetchData();
-  }, []);
+  }, [allCategories]);
 
   return (
     <div className="lg:flex container mx-auto md:flex justify-center gap-5 py-14 hidden ">

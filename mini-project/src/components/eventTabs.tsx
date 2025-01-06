@@ -7,7 +7,6 @@ import Image from "next/image";
 import { IEvent, ITicket } from "@/types/event";
 import EventDescription from "./eventDescription";
 import EventTicket from "./eventTicket";
-import Link from "next/link";
 import axios from "@/helpers/axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -46,14 +45,6 @@ const EventTabs: React.FC<EventTabsProps> = ({ data }) => {
       </div>
     );
   }
-
-  useEffect(() => {
-    if (!data.Ticket || data.Ticket.length === 0) {
-      console.warn("No tickets available for this event.");
-    }
-  }, [data.Ticket]);
-
-  console.log("Data Ticket:", data.Ticket);
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);

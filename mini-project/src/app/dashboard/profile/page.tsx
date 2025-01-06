@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import { useSession } from "@/components/context/useSession";
 import UserCoupon from "@/components/userCopuon";
 import authGuard from "@/hoc/authGuard";
+import Image from "next/image";
 
 function AdminProfile() {
   const base_url = process.env.NEXT_PUBLIC_BASE_URL_BE;
@@ -139,13 +140,17 @@ function AdminProfile() {
       <div className="flex flex-col min-h-screen bg-gray-100 text-gray-800 p-5">
         <div className="flex-1 px-6 py-6">
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h1 className="text-3xl font-bold mb-6 text-center text-gray-900">Profile</h1>
+            <h1 className="text-3xl font-bold mb-6 text-center text-gray-900">
+              Profile
+            </h1>
             <div className="flex flex-col items-center lg:gap-8">
               {/* Profile Avatar */}
               <div className="relative">
-                <img
+                <Image
                   src={avatar || "/festifylogo.png"}
                   alt="Avatar"
+                  height={40}
+                  width={40}
                   className="w-40 h-40 rounded-full border-4 border-red shadow-lg cursor-pointer hover:opacity-90"
                   onClick={() => openModal(avatar || "/festifylogo.png")}
                 />
@@ -163,7 +168,9 @@ function AdminProfile() {
               {/* Profile Info */}
               <div className="mt-6 text-center">
                 <div className="mb-4">
-                  <h2 className="text-lg font-semibold text-gray-900">Username</h2>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Username
+                  </h2>
                   <p className="text-gray-600">{username || "Not Available"}</p>
                 </div>
                 <div className="mb-4">
@@ -171,16 +178,26 @@ function AdminProfile() {
                   <p className="text-gray-600">{email || "Not Available"}</p>
                 </div>
                 <div className="mb-4">
-                  <h2 className="text-lg font-semibold text-gray-900">Points</h2>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Points
+                  </h2>
                   <p className="text-gray-600">{points || "Not Available"}</p>
                 </div>
                 <div className="mb-4">
-                  <h2 className="text-lg font-semibold text-gray-900">Referral Code</h2>
-                  <p className="text-gray-600">{referralCode || "Not Available"}</p>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Referral Code
+                  </h2>
+                  <p className="text-gray-600">
+                    {referralCode || "Not Available"}
+                  </p>
                 </div>
                 <div className="mb-4">
-                  <h2 className="text-lg font-semibold text-gray-900">Last Login</h2>
-                  <p className="text-gray-600">{lastLogin || "Not Available"}</p>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Last Login
+                  </h2>
+                  <p className="text-gray-600">
+                    {lastLogin || "Not Available"}
+                  </p>
                 </div>
               </div>
             </div>
@@ -220,7 +237,7 @@ function AdminProfile() {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
           <div className="relative">
-            <img
+            <Image
               src={selectedImage!}
               alt="Full View"
               className="max-w-full max-h-screen rounded-lg"
@@ -237,4 +254,4 @@ function AdminProfile() {
     </>
   );
 }
- export default authGuard(AdminProfile)
+export default authGuard(AdminProfile);

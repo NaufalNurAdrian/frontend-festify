@@ -18,20 +18,16 @@ export default function VerifyPage({ params }: { params: { token: string } }) {
       if (!res.ok) throw result;
       toast.success(result.message);
       router.push("/login");
-    } catch (err: any) {
+    } catch (err) {
       console.log(err);
-      toast.error(err.message);
+      toast.error("Cannot Verify User");
       router.push("/");
     }
   };
 
   useEffect(() => {
     onVerify();
-  }, []);
+  }, [onVerify]);
 
-  return (
-    <div className="flex justify-center min-h-screen items-center">
-      
-    </div>
-  );
+  return <div className="flex justify-center min-h-screen items-center"></div>;
 }

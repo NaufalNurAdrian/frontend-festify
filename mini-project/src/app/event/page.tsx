@@ -48,7 +48,6 @@ export default function EventList() {
     const fetchData = async () => {
       try {
         const data: Event[] = await getEvent();
-        console.log("Fetched data (EventList):", data);
         setEvents(data);
       } catch (error) {
         console.error("Error fetching data:", error);

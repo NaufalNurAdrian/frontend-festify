@@ -32,12 +32,7 @@ export default function ForgotPass() {
         {/* Left Section */}
         <div className="md:flex-1 flex-col items-center justify-center hidden lg:flex">
           <div>
-            <Image
-              src="/auth.png"
-              alt="login image"
-              width={500}
-              height={500}
-            />
+            <Image src="/auth.png" alt="login image" width={500} height={500} />
           </div>
           <div>
             <h1 className="text-2xl font-bold mt-4">Welcome</h1>
@@ -56,20 +51,19 @@ export default function ForgotPass() {
                 onSubmit={async (values, actions) => {
                   setIsLoading(true);
                   try {
-                    // Kirim permintaan ke server
-                    const response = await axios.post(
+                    await axios.post(
                       "http://localhost:8000/api/users/verify-forgot",
                       values
                     );
-
                     // Tampilkan notifikasi keberhasilan
-                    toast.success( "Email sent successfully!");
+                    toast.success("Email sent successfully!");
 
                     // Reset form setelah berhasil
                     actions.resetForm();
-                  } catch (error: any) {
+                  } catch (error) {
+                    console.log(error);
                     // Tangani error
-                    
+
                     toast.error("error");
                   } finally {
                     setIsLoading(false);

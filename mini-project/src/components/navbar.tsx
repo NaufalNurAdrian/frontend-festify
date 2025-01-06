@@ -3,7 +3,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { RxHamburgerMenu } from "react-icons/rx";
 import SearchBar from "./searchbar";
-import { TbFilter } from "react-icons/tb";
 import { Avatar } from "./avatar";
 import { ToastContainer } from "react-toastify";
 
