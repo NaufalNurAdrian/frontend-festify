@@ -3,12 +3,20 @@
 import RichTextEditor from "@/components/form/events/textEditor";
 import authGuard from "@/hoc/authGuard";
 import { useState } from "react";
-// Sesuaikan path sesuai lokasi file RichTextEditor
+import {
+  FiPlus,
+  FiSave,
+  FiTrash,
+  FiFileText,
+  FiMapPin,
+  FiCalendar,
+} from "react-icons/fi";
+import { FaTicketAlt, FaTags, FaImage } from "react-icons/fa";
 
 const CreateEvent = () => {
   const [eventData, setEventData] = useState({
     title: "",
-    description: "", // Gunakan description untuk React Quill
+    description: "",
     location: "",
     startTime: "",
     endTime: "",
@@ -17,10 +25,11 @@ const CreateEvent = () => {
   });
 
   const [tickets, setTickets] = useState([
-    { type: "", price: 0, seats: 0, lastOrder: "" },
+    { type: "STANDARD", price: 0, seats: 0, lastOrder: "" },
   ]);
 
   const enumCategories = ["MUSIC", "FILM", "SPORT", "EDUCATION"];
+  const ticketTypes = ["STANDARD", "VIP", "VVIP", "FREE"];
 
   const handleEventChange = (
     e: React.ChangeEvent<
@@ -50,11 +59,20 @@ const CreateEvent = () => {
   ) => {
     const updatedTickets = [...tickets];
     updatedTickets[index] = { ...updatedTickets[index], [field]: value };
+
+    // Jika memilih FREE, harga otomatis menjadi 0 dan field price nonaktif
+    if (field === "type" && value === "FREE") {
+      updatedTickets[index].price = 0;
+    }
+
     setTickets(updatedTickets);
   };
 
   const addTicket = () => {
-    setTickets([...tickets, { type: "", price: 0, seats: 0, lastOrder: "" }]);
+    setTickets([
+      ...tickets,
+      { type: "STANDARD", price: 0, seats: 0, lastOrder: "" },
+    ]);
   };
 
   const removeTicket = (index: number) => {
@@ -126,139 +144,201 @@ const CreateEvent = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Create Event</h1>
+    <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg my-4">
+      <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2 mb-6">
+        <FiFileText /> Create Event
+      </h1>
 
-      <div className="space-y-4 items-center pb-1">
-        <h1 className="font-semibold">Event Title</h1>
-        <input
-          type="text"
-          name="title"
-          placeholder="Title"
-          value={eventData.title}
-          onChange={handleEventChange}
-          className="w-full p-2 border border-gray-300 rounded my-2"
-        />
-        {/* Gunakan RichTextEditor untuk mengatur description */}
-        <h1 className="font-semibold">Description</h1>
-        <RichTextEditor
-          setFieldValue={(field, value) =>
-            setEventData((prev) => ({
-              ...prev,
-              [field]: value,
-            }))
-          }
-        />
-        <h1 className="font-semibold">Location</h1>
-        <input
-          type="text"
-          name="location"
-          placeholder="Location"
-          value={eventData.location}
-          onChange={handleEventChange}
-          className="w-full p-2 border border-gray-300 rounded"
-        />
-        <h1 className="font-semibold">Start & End Date Time</h1>
-        <input
-          type="datetime-local"
-          name="startTime"
-          value={eventData.startTime}
-          onChange={handleEventChange}
-          className="w-full p-2 border border-gray-300 rounded"
-        />
-        <input
-          type="datetime-local"
-          name="endTime"
-          value={eventData.endTime}
-          onChange={handleEventChange}
-          className="w-full p-2 border border-gray-300 rounded"
-        />
-        <h1 className="font-semibold">Category Event</h1>
-        <select
-          name="category"
-          value={eventData.category}
-          onChange={handleEventChange}
-          className="w-full p-2 border border-gray-300 rounded"
-        >
-          {enumCategories.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
-        <h1>
-          {" "}
-          <span className="font-semibold"> Thumbnail</span>
+      <div className="space-y-6">
+        <div>
+          <label className="text-lg font-medium text-gray-700 mb-2 flex items-center gap-2">
+            <FiFileText /> Event Title
+          </label>
+          <input
+            type="text"
+            name="title"
+            placeholder="Enter event title"
+            value={eventData.title}
+            onChange={handleEventChange}
+            className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-red focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label className="text-lg font-medium text-gray-700 mb-2 flex items-center gap-2">
+            <FiFileText /> Description
+          </label>
+          <RichTextEditor
+            setFieldValue={(field, value) =>
+              setEventData((prev) => ({
+                ...prev,
+                [field]: value,
+              }))
+            }
+          />
+        </div>
+
+        <div>
+          <label className="text-lg font-medium text-gray-700 mb-2 flex items-center gap-2">
+            <FiMapPin /> Location
+          </label>
+          <input
+            type="text"
+            name="location"
+            placeholder="Event location"
+            value={eventData.location}
+            onChange={handleEventChange}
+            className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-red focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label className=" text-lg font-medium text-gray-700 mb-2 flex items-center gap-2">
+            <FiCalendar /> Event Date & Time
+          </label>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <input
+              type="datetime-local"
+              name="startTime"
+              value={eventData.startTime}
+              onChange={handleEventChange}
+              className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-red focus:outline-none"
+            />
+            <input
+              type="datetime-local"
+              name="endTime"
+              value={eventData.endTime}
+              onChange={handleEventChange}
+              className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-red focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="text-lg font-medium text-gray-700 mb-2 flex items-center gap-2">
+            <FaTags /> Category
+          </label>
+          <select
+            name="category"
+            value={eventData.category}
+            onChange={handleEventChange}
+            className="w-full p-3 border border-gray-300 rounded-lg shadow-sm bg-white focus:ring-2 focus:ring-red focus:outline-none"
+          >
+            {enumCategories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="text-lg font-medium text-gray-700 mb-2 flex items-center gap-2">
+            <FaImage /> Thumbnail
+          </label>
           <input
             type="file"
             name="thumbnail"
             onChange={handleEventChange}
-            className="w-full p-2"
+            className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-red focus:outline-none"
           />
-        </h1>
+        </div>
       </div>
 
-      <h2 className="text-xl font-bold mt-6">Tickets</h2>
+      <h2 className="text-2xl font-bold mt-10 mb-4 flex items-center gap-2">
+        <FaTicketAlt /> Tickets
+      </h2>
+
       {tickets.map((ticket, index) => (
-        <div key={index} className="space-y-2 border p-4 rounded mb-4">
-          <h1 className="font-medium">Type Tickets</h1>
-          <input
-            type="text"
-            placeholder="Type"
-            value={ticket.type}
-            onChange={(e) => handleTicketChange(index, "type", e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-          <h1 className="font-medium">Price</h1>
-          <input
-            type="number"
-            placeholder="Price"
-            value={ticket.price}
-            onChange={(e) =>
-              handleTicketChange(index, "price", Number(e.target.value))
-            }
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-          <h1 className="font-medium">Ticket Stock</h1>
-          <input
-            type="number"
-            placeholder="Seats"
-            value={ticket.seats}
-            onChange={(e) =>
-              handleTicketChange(index, "seats", Number(e.target.value))
-            }
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-          <h1 className="font-medium">Last Order for buy Ticket</h1>
-          <input
-            type="datetime-local"
-            placeholder="Last Order"
-            value={ticket.lastOrder}
-            onChange={(e) =>
-              handleTicketChange(index, "lastOrder", e.target.value)
-            }
-            className="w-full p-2 border border-gray-300 rounded"
-          />
+        <div
+          key={index}
+          className="p-4 bg-gray-50 border border-gray-200 rounded-lg shadow-sm mb-4"
+        >
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
+            <div className="w-full">
+              <label className="block text-sm font-medium text-gray-700">
+                Ticket Type
+              </label>
+              <select
+                value={ticket.type}
+                onChange={(e) =>
+                  handleTicketChange(index, "type", e.target.value)
+                }
+                className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-red focus:outline-none"
+              >
+                {ticketTypes.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="w-full">
+              <label className="block text-sm font-medium text-gray-700">
+                Price
+              </label>
+              <input
+                type="number"
+                placeholder="Price"
+                value={ticket.price}
+                disabled={ticket.type === "FREE"}
+                onChange={(e) =>
+                  handleTicketChange(index, "price", Number(e.target.value))
+                }
+                className={`w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-red focus:outline-none ${
+                  ticket.type === "FREE" ? "bg-gray-200 cursor-not-allowed" : ""
+                }`}
+              />
+            </div>
+            <div className="w-full">
+              <label className="block text-sm font-medium text-gray-700">
+                Seats
+              </label>
+              <input
+                type="number"
+                placeholder="Seats"
+                value={ticket.seats}
+                onChange={(e) =>
+                  handleTicketChange(index, "seats", Number(e.target.value))
+                }
+                className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-red focus:outline-none"
+              />
+            </div>
+            <div className="w-full">
+              <label className="block text-sm font-medium text-gray-700">
+                Last Order
+              </label>
+              <input
+                type="datetime-local"
+                value={ticket.lastOrder}
+                onChange={(e) =>
+                  handleTicketChange(index, "lastOrder", e.target.value)
+                }
+                className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-red focus:outline-none"
+              />
+            </div>
+          </div>
           <button
             onClick={() => removeTicket(index)}
-            className="px-4 py-2 bg-red-500 text-white rounded"
+            className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg shadow-sm hover:bg-red-600 focus:ring-2 focus:ring-red focus:outline-none flex items-center gap-2"
           >
-            Remove Ticket
+            <FiTrash /> Remove Ticket
           </button>
         </div>
       ))}
-      <div className="flex justify-between items-center">
+
+      <div className="flex justify-between items-center mt-6">
         <button
           onClick={addTicket}
-          className="px-4 py-2 bg-red text-white rounded"
+          className="px-4 py-2 bg-red text-white rounded-lg shadow-sm hover:bg-codgray focus:ring-2 focus:ring-red focus:outline-none flex items-center gap-2"
         >
-          Add Ticket
+          <FiPlus /> Add Ticket
         </button>
         <button
           onClick={handleCreateEventAndTickets}
-          className="px-4 py-2 bg-red text-white rounded"
+          className="px-4 py-2 bg-codgray text-white rounded-lg shadow-sm hover:bg-red focus:ring-2 focus:ring-red focus:outline-none flex items-center gap-2"
         >
-          Create Event and Tickets
+          <FiSave /> Create Event
         </button>
       </div>
     </div>

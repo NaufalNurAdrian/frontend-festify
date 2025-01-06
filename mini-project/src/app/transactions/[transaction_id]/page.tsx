@@ -4,7 +4,11 @@ import PayButton from "@/components/buttonPayMd";
 import CountDown from "@/components/expiredTime";
 import { formatDate, formatDateTime } from "@/helpers/formatDate";
 import { formatPrice } from "@/helpers/formatPrice";
-import { getSnapToken, getTransactionDetail } from "@/libs/transaction";
+import {
+  getSnapToken,
+  getTransactionDetail,
+  applyCoupon,
+} from "@/libs/transaction";
 
 import Image from "next/image";
 import { FaClock } from "react-icons/fa";
@@ -20,6 +24,10 @@ function OrderPage({
   const [transaction, setTransaction] = useState<ITransaction | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [coupons, setCoupons] = useState<
+    ITransaction["user"]["coupon"][] | null
+  >(null);
+  const [selectedCoupon, setSelectedCoupon] = useState<number | null>(null); // State untuk kupon yang dipilih
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,7 +35,7 @@ function OrderPage({
         const fetchedTransaction = await getTransactionDetail(
           params.transaction_id
         );
-        console.log("Transaction Data:", fetchedTransaction); // Debugging
+        console.log("Transaction Data:", fetchedTransaction);
         setTransaction(fetchedTransaction);
 
         const fetchedToken = await getSnapToken(
@@ -35,6 +43,9 @@ function OrderPage({
           +params.transaction_id
         );
         setToken(fetchedToken);
+
+        // Ambil kupon yang tersedia
+        setCoupons([fetchedTransaction.user.coupon]);
 
         setLoading(false);
       } catch (error) {
@@ -46,8 +57,68 @@ function OrderPage({
     fetchData();
   }, [params.transaction_id]);
 
+  const handleApplyCoupon = async () => {
+    if (!selectedCoupon || !transaction) return;
+
+    try {
+      // Step 1: Apply the coupon to get the response
+      const response = await applyCoupon(
+        transaction.transaction_id,
+        selectedCoupon.toString()
+      );
+
+      if (response.message === "Coupon applied successfully") {
+        // Step 2: Find the selected coupon and ensure it’s a percentage
+        const coupon = coupons?.find(
+          (coupon) => coupon.coupon_id === selectedCoupon
+        );
+
+        if (!coupon) {
+          alert("Coupon not found");
+          return;
+        }
+
+        // Step 3: Calculate the discount amount as a percentage of the total price
+        const discountAmount =
+          (transaction.totalPrice * coupon.discountAmount) / 100;
+        const finalPrice = transaction.totalPrice - discountAmount;
+
+        // Step 4: Update the transaction details with the new final price
+        const updatedTransaction = await getTransactionDetail(
+          params.transaction_id
+        );
+
+        // Step 5: Update the state with the new final price after applying the discount
+        setTransaction((prevTransaction) => {
+          if (!prevTransaction) {
+            return {
+              ...updatedTransaction,
+              finalPrice, // Set the new final price after discount
+            };
+          }
+
+          return {
+            ...prevTransaction,
+            finalPrice, // Set the new final price after discount
+          };
+        });
+
+        alert(
+          `Coupon applied successfully! Discount: ${coupon.discountAmount}%`
+        );
+      }
+    } catch (error) {
+      alert("Failed to apply coupon. Please try again.");
+      console.error(error);
+    }
+  };
+
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="loaderx-wrapper">
+        <div className="loaderx"></div>
+      </div>
+    );
   }
 
   if (!transaction) {
@@ -59,14 +130,6 @@ function OrderPage({
       <div className="container mx-auto w-full tablet-[60%] justify-center">
         <h1 className="text-2xl font-semibold my-2">Order Details</h1>
         <div className="relative bg-rose-50 border border-red rounded-lg p-6 mb-6 max-w-5xl mx-auto border-dashed clip-path-notch">
-          {/* Notch Kiri */}
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 w-8 h-8 bg-blue-50 rounded-full z-10 border-none"></div>
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 w-8 h-8 border border-dashed border-red rounded-full z-20 bg-[#f5f5f5]"></div>
-
-          {/* Notch Kanan */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 w-8 h-8 bg-blue-50 rounded-full z-10 border-none"></div>
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 w-8 h-8 border border-dashed border-red rounded-full z-20 bg-[#f5f5f5]"></div>
-
           {/* Informasi Tiket */}
           <div className="py-4 flex flex-col gap-2">
             {transaction.OrderDetail && transaction.OrderDetail.length > 0 ? (
@@ -149,18 +212,50 @@ function OrderPage({
           </table>
         </div>
       </div>
-      <div className="flex flex-col rounded-md shadow-xl py-6 px-4 tablet:w-[40%] gap-2">
-        <CountDown date={transaction.expiredAt} />
+      <div className="flex flex-col rounded-2xl shadow-xl py-6 px-4 tablet:w-[40%] gap-2 border bg-white">
+        <div className="flex items-center justify-end">
+          <CountDown date={transaction.expiredAt} />
+        </div>
+
         <h1 className="text-2xl font-semibold mb-2">Price Details</h1>
         <div className="flex justify-between items-center">
           <span>Total Ticket Price</span>{" "}
           <span>{formatPrice(transaction.totalPrice)}</span>
         </div>
-        <div className="flex justify-between items-center font-semibold text-xl border-t border-b py-2">
+        {coupons && coupons.length > 0 && (
+          <div className="flex flex-col gap-2 mt-4">
+            <label htmlFor="coupon" className="font-semibold">
+              Select Coupon
+            </label>
+            <select
+              id="coupon"
+              className="border rounded-2xl px-2 py-1"
+              value={selectedCoupon || ""}
+              onChange={(e) => setSelectedCoupon(Number(e.target.value))}
+            >
+              <option value="">No Coupon</option>
+              {coupons.map((coupon) => (
+                <option key={coupon.coupon_id} value={coupon.coupon_id}>
+                  Use Refferal Discount {coupon.discountAmount}% - Expires:{" "}
+                  {formatDate(coupon.expiresAt)}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={handleApplyCoupon}
+              className="bg-red text-white px-4 py-2 rounded-2xl mt-2 w-[15%]"
+            >
+              Apply Coupon
+            </button>
+          </div>
+        )}
+        <div className="flex justify-between items-center font-semibold text-xl border-t border-b border-dashed py-2">
           <span>Total Pay</span>{" "}
           <span>{formatPrice(transaction.finalPrice)}</span>
         </div>
-        {token && <PayButton token={token} />}
+        <div className="flex justify-center items-center">
+          {token && <PayButton token={token} />}
+        </div>
       </div>
     </main>
   );

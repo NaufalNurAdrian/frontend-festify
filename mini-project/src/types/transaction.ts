@@ -32,8 +32,17 @@ interface IOrderDetail {
 }
 
 interface ITransaction {
+  transaction_id: string;
   expiredAt: string;
   totalPrice: number;
   finalPrice: number;
-  OrderDetail: IOrderDetail[]; // Array of order details
+  OrderDetail: IOrderDetail[];
+  user: {
+    coupon: {
+      coupon_id: number;
+      discountAmount: number;
+      expiresAt: string;
+      used: string;
+    };
+  }; // Array of order details
 }

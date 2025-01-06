@@ -12,6 +12,8 @@
     "@contentful/rich-text-react-renderer": "^16.0.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@headlessui/react": "^2.2.0",
+    "@heroicons/react": "^2.2.0",
     "@mui/material": "^6.2.0",
     "@mui/x-charts": "^7.23.2",
     "apexcharts": "^4.2.0",
@@ -35,7 +37,7 @@
     "recharts": "^2.15.0",
     "supabase": "^1.223.10",
     "sweetalert2": "^11.6.13",
-    "swiper": "^11.1.15",
+    "swiper": "^11.2.0",
     "use-debounce": "^10.0.4",
     "usehooks-ts": "^3.1.0",
     "yup": "^1.4.0"

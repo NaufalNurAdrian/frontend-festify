@@ -30,8 +30,8 @@ export default function CountDown({ date }: { date: string }) {
   const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
   return (
-    <div className="font-semibold bg-yellow-50 text-center">
-      {timeLeft > 0 ? `${minutes}m ${seconds}s` : "Time's up!"}
+    <div className="font-medium bg-rose-100 text-center rounded-2xl border-dashed w-[15%] flex justify-center items-center">
+      {timeLeft > 0 ? `${minutes}m ${seconds}s` : "Expired Time!"}
     </div>
   );
 }

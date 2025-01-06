@@ -12,18 +12,18 @@ const EventDescription: React.FC<EventDescriptionProps> = ({ description }) => {
         dangerouslySetInnerHTML={{ __html: description }}
       />
 
-      <h3 className="mt-6 font-bold text-gray-800">Syarat & Ketentuan</h3>
+      <h3 className="mt-6 font-bold text-gray-800">Terms & Conditions</h3>
       <ul className="list-disc list-inside mt-2 text-gray-600">
-        <li>
+        {/* <li>
           <strong>No outside food or drink allowed</strong>
         </li>
         <li className="italic text-red-500">
           Dilarang membawa makanan atau minuman dari luar Bengkel Space
-        </li>
+        </li> */}
         <li>Tickets are non-refundable</li>
-        <li className="italic text-red-500">
+        {/* <li className="italic text-red-500">
           Tiket yang sudah dibeli tidak dapat dikembalikan
-        </li>
+        </li> */}
       </ul>
     </div>
   );

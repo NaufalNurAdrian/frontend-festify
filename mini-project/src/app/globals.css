@@ -75,3 +75,77 @@ body {
   background-color: white !important;
   color: #374151 !important; /* Warna teks abu-abu untuk light mode */
 }
+
+/* Centering the loader on the screen */
+.loaderx-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5); /* Optional overlay background */
+  z-index: 9999; /* Ensure it appears on top */
+}
+
+/* Your loaderx animation */
+.loaderx {
+  width: 50px;
+  height: 50px;
+  position: relative;
+}
+.loaderx::before,
+.loaderx::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 48em;
+  height: 48em;
+  background-image: radial-gradient(circle 10px, #ed0d0d 100%, transparent 0),
+    radial-gradient(circle 10px, #ed0d0d 100%, transparent 0),
+    radial-gradient(circle 10px, #ed0d0d 100%, transparent 0),
+    radial-gradient(circle 10px, #ed0d0d 100%, transparent 0),
+    radial-gradient(circle 10px, #ed0d0d 100%, transparent 0),
+    radial-gradient(circle 10px, #ed0d0d 100%, transparent 0),
+    radial-gradient(circle 10px, #ed0d0d 100%, transparent 0),
+    radial-gradient(circle 10px, #ed0d0d 100%, transparent 0);
+  background-position: 0em -18em, 0em 18em, 18em 0em, -18em 0em, 13em -13em,
+    -13em -13em, 13em 13em, -13em 13em;
+  background-repeat: no-repeat;
+  font-size: 0.5px;
+  border-radius: 50%;
+  animation: blast 1s ease-in infinite;
+}
+.loaderx::after {
+  font-size: 1px;
+  background: #ed0d0d;
+  animation: bounce 1s ease-in infinite;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    font-size: 0.75px;
+  }
+  50% {
+    font-size: 1.5px;
+  }
+}
+@keyframes blast {
+  0%,
+  40% {
+    font-size: 0.5px;
+  }
+  70% {
+    opacity: 1;
+    font-size: 4px;
+  }
+  100% {
+    font-size: 6px;
+    opacity: 0;
+  }
+}
