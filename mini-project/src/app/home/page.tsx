@@ -1,6 +1,7 @@
 import EventCard from "@/components/cardevent";
 import Carousel from "@/components/carousel";
 import CategoryCards from "@/components/categorycard";
+import Features from "@/components/featuresHome";
 import { getEvent } from "@/libs/events";
 import { IEvent } from "@/types/event";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
@@ -8,6 +9,13 @@ import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 export default async function HomePage() {
   const data: IEvent[] = await getEvent();
   console.log("Fetched data:", data); // Debugging log
+
+  // Slice the first 8 events
+  const eventsToDisplay = data.slice(0, 8);
+
+  // Split the 8 events into two groups (4 top and 4 bottom)
+  const topEvents = eventsToDisplay.slice(0, 4);
+  const bottomEvents = eventsToDisplay.slice(4, 8);
 
   return (
     <main>
@@ -28,9 +36,11 @@ export default async function HomePage() {
         </h1>
         <div className="container mx-auto h-px bg-gray-300 my-2" />
       </div>
+
+      {/* Top events (first 4 events) */}
       <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-2">
-        {Array.isArray(data) &&
-          data.map((item, idx) => (
+        {Array.isArray(topEvents) &&
+          topEvents.map((item, idx) => (
             <div key={idx}>
               <EventCard
                 thumbnail={item.thumbnail}
@@ -40,11 +50,39 @@ export default async function HomePage() {
                 slug={item.slug}
                 username={item.organizer.username || "Unknown"}
                 location={item.location}
+                price={Math.min(
+                  ...(item.Ticket?.map((ticket) => ticket.price) ?? [0])
+                )}
               />
             </div>
           ))}
       </div>
-      <div className="bg-red">QWERTYUIIOOPPOSADAS</div>
+
+      {/* Bottom events (next 4 events) */}
+      <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-2">
+        {Array.isArray(bottomEvents) &&
+          bottomEvents.map((item, idx) => (
+            <div key={idx}>
+              <EventCard
+                thumbnail={item.thumbnail}
+                title={item.title}
+                avatar={item.organizer.avatar}
+                description={item.description}
+                slug={item.slug}
+                username={item.organizer.username || "Unknown"}
+                location={item.location}
+                price={Math.min(
+                  ...(item.Ticket?.map((ticket) => ticket.price) ?? [0])
+                )}
+              />
+            </div>
+          ))}
+      </div>
+
+      <div>
+        <div className="container mx-auto border-t border-dashed border-gray-700 my-5"></div>
+        <Features />
+      </div>
     </main>
   );
 }

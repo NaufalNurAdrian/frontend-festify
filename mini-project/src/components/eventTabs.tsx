@@ -35,7 +35,16 @@ const EventTabs: React.FC<EventTabsProps> = ({ data }) => {
   const [selectedTicketCount, setSelectedTicketCount] = useState(0);
   const [selectedTicketType, setSelectedTicketType] = useState<string>("");
   const [OrderDetail, setOrderDetail] = useState<ITicketContext[] | null>(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  if (loading) {
+    return (
+      <div className="loaderx-wrapper">
+        <div className="loaderx"></div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     if (!data.Ticket || data.Ticket.length === 0) {
@@ -101,7 +110,7 @@ const EventTabs: React.FC<EventTabsProps> = ({ data }) => {
       alert("Please select at least one ticket.");
       return;
     }
-
+    setLoading(false);
     try {
       const bodyParameters = {
         totalPrice,
@@ -138,6 +147,14 @@ const EventTabs: React.FC<EventTabsProps> = ({ data }) => {
       );
     }
   }, [OrderDetail]);
+
+  if (loading) {
+    return (
+      <div className="loaderx-wrapper">
+        <div className="loaderx"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-4 py-14">

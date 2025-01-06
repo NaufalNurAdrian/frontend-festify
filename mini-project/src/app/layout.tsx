@@ -6,6 +6,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import NavbarExcept from "@/components/navbarExcept";
 import Script from "next/script";
+import FooterExcept from "@/components/footerExcept";
 
 const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
@@ -42,6 +43,7 @@ export default function RootLayout({
             autoClose={3000}
             position="bottom-right"
           />
+          <FooterExcept />
         </SessionProvider>
       </body>
     </html>
