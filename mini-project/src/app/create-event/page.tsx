@@ -1,6 +1,7 @@
 "use client";
 
 import RichTextEditor from "@/components/form/events/textEditor";
+import authGuard from "@/hoc/authGuard";
 import { useState } from "react";
 import {
   FiPlus,
@@ -344,4 +345,4 @@ const CreateEvent = () => {
   );
 };
 
-export default CreateEvent;
+export default authGuard(CreateEvent);

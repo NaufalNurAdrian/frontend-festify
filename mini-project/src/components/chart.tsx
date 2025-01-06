@@ -1,78 +1,64 @@
 "use client";
+import React, { useState } from "react";
+import { IEvent } from "@/types/event";
+import IncomePerDayChart from "./chartDay";
+import IncomePerMonthChart from "./chartMonth";
+import IncomePerYearChart from "./chartYear";
 
-import React, { useEffect, useState } from "react";
-import { LineChart, lineElementClasses } from "@mui/x-charts/LineChart";
-import axios from "axios";
 
-// Define the type of API response
-type IncomeData = {
-  date: string;
-  totalIncome: number;
-};
+interface EventTabsProps {
+  data: IEvent;
+}
 
-type ApiResponse = {
-  incomePerDay: IncomeData[];
-};
+const EventTabs: React.FC<EventTabsProps> = () => {
+  const [activeTab, setActiveTab] = useState("DAY");
 
-export default function IncomePerDayChart() {
-  const [uData, setUData] = useState<number[]>([]);
-  const [xLabels, setXLabels] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchIncomeData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const token = localStorage.getItem("token");
-        if (!token) {
-          throw new Error("No token found. Please log in.");
-        }
-        
-        const response = await axios.get<ApiResponse>(
-          `${process.env.NEXT_PUBLIC_BASE_URL_BE}/dashboard/payments/total-income`,{
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        const incomeData = response.data.incomePerDay;
-        const labels = incomeData.map((item) => item.date);
-        const data = incomeData.map((item) => item.totalIncome);
-
-        setXLabels(labels);
-        setUData(data);
-      } catch (err) {
-        console.error("Error fetching income data:", err);
-        setError("Failed to fetch income data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchIncomeData();
-  }, []);
-
-  if (loading) {
-    return <p>Loading chart data...</p>;
-  }
-
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+  };
 
   return (
-    <LineChart
-      width={500}
-      height={300}
-      series={[{ data: uData, label: "Income", area: true, showMark: false }]}
-      xAxis={[{ scaleType: "point", data: xLabels }]}
-      sx={{
-        [`& .${lineElementClasses.root}`]: {
-          display: "none",
-        },
-      }}
-    />
+    <div className="">
+        <div className="mt-1 md:col-span-2">
+          <div className="border-b mb-4 flex text-center justify-center items-center">
+            <button
+              className={`pb-2 px-4 w-[50%] ${
+                activeTab === "DAY"
+                  ? "border-b-2 border-red text-red"
+                  : "text-gray-600"
+              } font-semibold`}
+              onClick={() => handleTabChange("DAY")}
+            >
+              DAY
+            </button>
+            <button
+              className={`pb-2 px-4 w-[50%] ${
+                activeTab === "MONTH"
+                  ? "border-b-2 border-red text-red"
+                  : "text-gray-600"
+              } font-semibold`}
+              onClick={() => handleTabChange("MONTH")}
+            >
+              Month
+            </button>
+            <button
+              className={`pb-2 px-4 w-[50%] ${
+                activeTab === "YEAR"
+                  ? "border-b-2 border-red text-red"
+                  : "text-gray-600"
+              } font-semibold`}
+              onClick={() => handleTabChange("YEAR")}
+            >
+              Year
+            </button>
+          </div>
+
+          {activeTab === "DAY" && <IncomePerDayChart/>}
+          {activeTab === "MONTH" && <IncomePerMonthChart/>}
+          {activeTab === "YEAR" && <IncomePerYearChart/>}
+        </div>
+    </div>
   );
-}
+};
+
+export default EventTabs;

@@ -9,7 +9,7 @@ export default function HomeLayout({ children }: { children: ReactNode }) {
         <div className="flex">
           <Sidebar />
         </div>
-        <div className="flex flex-col w-full h-full">
+        <div className="flex flex-col w-full lg:w-[86%] lg:ml-[14%] lg:pl-2 h-full ">
           <DashboardHeader />
           {children}
         </div>

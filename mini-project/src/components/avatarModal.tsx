@@ -174,14 +174,14 @@ const AvatarModal = ({
                 Explore
               </button>
               <button
-                onClick={() => router.push("/ticket")}
+                onClick={() => router.push("/dashboard/myticket")}
                 className="block w-full px-4 py-2 text-sm text-codgray dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 My Ticket
               </button>
               <hr className="border-b-0 border-l-0 border-r-0 border-t-1 mx-7 border-codgray" />
               <button
-                onClick={() => router.push("/settings")}
+                onClick={() => router.push("/dashboard/profile")}
                 className="block w-full px-4 py-2 text-sm text-codgray dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 Account
