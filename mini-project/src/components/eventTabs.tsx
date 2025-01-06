@@ -10,6 +10,7 @@ import EventTicket from "./eventTicket";
 import Link from "next/link";
 import axios from "@/helpers/axios";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 interface EventTabsProps {
   data: IEvent;
@@ -134,7 +135,7 @@ const EventTabs: React.FC<EventTabsProps> = ({ data }) => {
       router.push(`/transactions/${data.orderId}`);
     } catch (err) {
       console.error("Failed to process transaction:", err);
-      alert("Transaction failed. Please try again.");
+      toast.error("Please login or register before buy tickets!");
     }
   };
 
