@@ -45,7 +45,8 @@ export default function Register() {
   const handleRegister = async (user: FormValues) => {
     try {
       setIsLoading(true);
-      const res = await fetch("http://localhost:8000/api/auth/register", {
+      const base_url = process.env.NEXT_PUBLIC_BASE_URL_BE;
+      const res = await fetch(`${base_url}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

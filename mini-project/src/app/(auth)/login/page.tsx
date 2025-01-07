@@ -35,7 +35,8 @@ export default function Login() {
     try {
       console.log(user);
       setIsLoading(true);
-      const res = await fetch("http://localhost:8000/api/auth/login", {
+      const base_url = process.env.NEXT_PUBLIC_BASE_URL_BE;
+      const res = await fetch(`${base_url}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
