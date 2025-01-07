@@ -2,7 +2,7 @@
 
 import RichTextEditor from "@/components/form/events/textEditor";
 import authGuard from "@/hoc/authGuard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FiPlus,
   FiSave,
@@ -32,6 +32,14 @@ const CreateEvent = () => {
 
   const enumCategories = ["MUSIC", "FILM", "SPORT", "EDUCATION"];
   const ticketTypes = ["STANDARD", "VIP", "VVIP", "FREE"];
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const tokenFromLocalStorage = localStorage.getItem("token");
+    if (tokenFromLocalStorage) {
+      setToken(tokenFromLocalStorage);
+    }
+  }, []);
 
   const handleEventChange = (
     e: React.ChangeEvent<
@@ -82,6 +90,10 @@ const CreateEvent = () => {
   };
 
   const handleCreateEventAndTickets = async () => {
+    if (!token) {
+      toast.error("No token found. Please Login.");
+      return;
+    }
     try {
       const formData = new FormData();
       Object.entries(eventData).forEach(([key, value]) => {
@@ -92,8 +104,8 @@ const CreateEvent = () => {
       if (!token) {
         throw new Error("No token found. Please Login.");
       }
-
-      const response = await fetch("http://localhost:8000/api/event/create/", {
+      const base_url = process.env.NEXT_PUBLIC_BASE_URL_BE;
+      const response = await fetch(`${base_url}/api/event/create/`, {
         method: "POST",
         body: formData,
         headers: { Authorization: `Bearer ${token}` },
@@ -106,11 +118,7 @@ const CreateEvent = () => {
 
         if (
           tickets.some(
-            (ticket) =>
-              !ticket.type ||
-              !ticket.price ||
-              !ticket.seats ||
-              !ticket.lastOrder
+            (ticket) => !ticket.type || !ticket.seats || !ticket.lastOrder
           )
         ) {
           alert("All ticket fields are required.");
@@ -118,7 +126,7 @@ const CreateEvent = () => {
         }
 
         const ticketResponse = await fetch(
-          `http://localhost:8000/api/event/create/ticket/${eventId}`,
+          `${base_url}/api/event/create/ticket/${eventId}`,
           {
             method: "POST",
             headers: {
@@ -133,7 +141,7 @@ const CreateEvent = () => {
 
         if (ticketResponse.ok) {
           toast.success("Event and tickets created successfully!");
-          Router.push("/dashboard");
+          Router.push("/dashboard/myevent");
         } else {
           toast.error(`Error creating tickets: ${ticketResult.message}`);
         }
@@ -141,6 +149,7 @@ const CreateEvent = () => {
         toast.error("Error creating event");
       }
     } catch (error) {
+      console.log(error);
       toast.error("Failed to create event and tickets.");
     }
   };

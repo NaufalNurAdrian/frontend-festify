@@ -1,10 +1,9 @@
 "use client";
 
 import * as Yup from "yup";
-import { Formik, Form, FormikProps } from "formik";
+import { Formik, Form, FormikProps, Field } from "formik";
 import { toast } from "react-toastify";
 import { useState } from "react";
-import { Input } from "@/components/form/input";
 import Image from "next/image";
 import axios from "axios";
 
@@ -51,6 +50,7 @@ export default function ForgotPass() {
                 onSubmit={async (values, actions) => {
                   setIsLoading(true);
                   try {
+                    // Kirim permintaan ke server
                     await axios.post(
                       "http://localhost:8000/api/users/verify-forgot",
                       values
@@ -73,7 +73,7 @@ export default function ForgotPass() {
                 {(props: FormikProps<FormValues>) => {
                   return (
                     <Form className="w-full max-w-md flex flex-col gap-4">
-                      <Input
+                      <Field
                         formik={props}
                         name="data"
                         label="Username Or Email :"

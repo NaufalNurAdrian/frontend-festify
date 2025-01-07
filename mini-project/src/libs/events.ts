@@ -7,9 +7,20 @@ export const getEvent = async () => {
   const data = await res.json();
   return data.events;
 };
+
+export const getEventUser = async () => {
+  const res = await fetch(`${base_url}/event/user`, {
+    next: { revalidate: 0 },
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  });
+  const data = await res.json();
+  return data.events;
+};
+
 export const getEventCompleted = async () => {
   const res = await fetch(`${base_url}/event/completed`, {
-    next: { revalidate: 10 },
+    next: { revalidate: 0 },
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
   });
   const data = await res.json();
   return data.events;

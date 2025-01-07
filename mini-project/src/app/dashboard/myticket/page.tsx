@@ -1,5 +1,6 @@
 "use client";
 
+import EventReview from "@/components/eventReview";
 import authGuard from "@/hoc/authGuard";
 import { useEffect, useState } from "react";
 import { FaClock } from "react-icons/fa";
@@ -18,6 +19,7 @@ interface Ticket {
   ticketId: {
     type: string;
     event: {
+      event_id: string;
       title: string;
       location: string;
       startTime: string;
@@ -92,12 +94,16 @@ function Tickets() {
             </h3>
             <p className="flex items-center gap-2 text-xs text-gray-700">
               <SlCalender className="text-lightBlue" />
-              {new Date(ticket.ticketId.event.startTime).toLocaleDateString()} -{" "}
+              {new Date(
+                ticket.ticketId.event.startTime
+              ).toLocaleDateString()} -{" "}
               {new Date(ticket.ticketId.event.endTime).toLocaleDateString()}
             </p>
             <p className="flex items-center gap-2 text-xs text-gray-700">
               <FaClock className="text-lightBlue" />
-              {new Date(ticket.ticketId.event.startTime).toLocaleTimeString()} -{" "}
+              {new Date(
+                ticket.ticketId.event.startTime
+              ).toLocaleTimeString()} -{" "}
               {new Date(ticket.ticketId.event.endTime).toLocaleTimeString()}
             </p>
             <p className="flex items-center gap-2 text-xs text-gray-700">
@@ -123,10 +129,11 @@ function Tickets() {
               </tr>
             </tbody>
           </table>
+          <EventReview eventId={ticket.ticketId.event.event_id} />
         </div>
       ))}
     </main>
   );
 }
 
-export default authGuard(Tickets)
+export default authGuard(Tickets);

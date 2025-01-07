@@ -5,6 +5,7 @@ import { Formik, Form, Field, FormikProps } from "formik";
 import { toast } from "react-toastify";
 import { useState } from "react";
 import Image from "next/image";
+import Router from "next/router";
 
 // Schema validasi menggunakan Yup
 const RegisterSchema = Yup.object().shape({
@@ -51,12 +52,19 @@ export default function Register() {
         },
         body: JSON.stringify(user),
       });
+
       const result = await res.json();
       if (!res.ok) throw result;
+      Router.push("/login");
       toast.success(result.message);
     } catch (err) {
+      if (typeof err === "object" && err !== null && "message" in err) {
+        const errorMessage = (err as { message: string }).message;
+        toast.error(errorMessage || "Failed to register.");
+      } else {
+        toast.error("An unknown error occurred.");
+      }
       console.error(err);
-      toast.error("Failed to register.");
     } finally {
       setIsLoading(false);
     }

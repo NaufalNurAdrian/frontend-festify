@@ -90,7 +90,7 @@ const AvatarModal = ({
   }, [isDropdownOpen]);
 
   return (
-    <div ref={dropdownRef} className="relative">
+    <div ref={dropdownRef || loading} className="relative">
       <div
         onClick={toggleDropdown}
         className="flex items-center cursor-pointer"

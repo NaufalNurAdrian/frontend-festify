@@ -53,7 +53,7 @@ export async function applyCoupon(transaction_id: string, coupon_id: string) {
 
       // Kirim request untuk apply coupon
       const { data } = await axios.post(
-        "/transactions/applyCoupon", // Ganti dengan URL API yang sesuai
+        "/transactions/applyCoupon",
         {
           transaction_id,
           coupon_id,
@@ -66,11 +66,11 @@ export async function applyCoupon(transaction_id: string, coupon_id: string) {
       );
 
       console.log("Coupon applied successfully:", data);
-      return data; // Kembalikan data dari server, bisa berupa success message atau data lainnya
+      return data;
     }
   } catch (err) {
     console.error("Error applying coupon:", err);
-    throw err; // Lempar error ke komponen yang memanggil untuk menangani error
+    throw err;
   }
 }
 
@@ -78,14 +78,68 @@ export async function getCouponDetails(token: string) {
   try {
     const { data } = await axios.get(`/users/profle/coupon`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Token digunakan untuk autentikasi
+        Authorization: `Bearer ${token}`,
       },
     });
 
     console.log("Coupon details:", data);
-    return data?.coupon; // Mengembalikan data kupon
+    return data?.coupon;
   } catch (err) {
     console.error("Error fetching coupon details:", err);
-    return null; // Jika terjadi error, kembalikan null
+    return null;
+  }
+}
+
+// Fungsi untuk mengambil user.point
+export async function getUserPoints() {
+  try {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        throw new Error("Token not found in localStorage");
+      }
+
+      const { data } = await axios.get(`/users/profile/points`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("User points:", data);
+      return data?.points; // Mengembalikan data poin pengguna
+    }
+  } catch (err) {
+    console.error("Error fetching user points:", err);
+    return null;
+  }
+}
+
+// Fungsi untuk mengurangi poin user
+export async function DeductUserPoints(points: number) {
+  try {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        throw new Error("Token not found in localStorage");
+      }
+
+      const { data } = await axios.post(
+        `/users/profile/points/deduct`,
+        { points },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Points deducted:", data);
+      return data?.success; // Mengembalikan status keberhasilan
+    }
+  } catch (err) {
+    console.error("Error deducting user points:", err);
+    throw err;
   }
 }

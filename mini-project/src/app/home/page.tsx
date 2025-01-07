@@ -3,12 +3,13 @@ import Carousel from "@/components/carousel";
 import CategoryCards from "@/components/categorycard";
 import Features from "@/components/featuresHome";
 import { getEvent } from "@/libs/events";
+
 import { IEvent } from "@/types/event";
 import Link from "next/link";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 
 export default async function HomePage() {
-  const data: IEvent[] = await getEvent();
+  const data: IEvent[] = (await getEvent()) || [];
   // Slice the first 8 events
   const eventsToDisplay = data.slice(0, 8);
 

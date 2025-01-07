@@ -9,7 +9,7 @@ export default function VerifyPage({ params }: { params: { token: string } }) {
   const onVerify = async () => {
     try {
       const res = await fetch(
-        `http://localhost:8000/api/auth/verify/${params.token}`,
+        `${process.env.NEXT_PUBLIC_BASE_URL_BE}/auth/verify/${params.token}`,
         {
           method: "PATCH",
         }

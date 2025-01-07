@@ -1,12 +1,11 @@
 "use client";
 
 import * as Yup from "yup";
-import { Formik, Form, FormikProps } from "formik";
+import { Formik, Form, FormikProps, Field } from "formik";
 import { toast } from "react-toastify";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/components/context/useSession";
-import { Input } from "@/components/form/input";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -90,13 +89,13 @@ export default function Login() {
                 {(props: FormikProps<FormValues>) => {
                   return (
                     <Form className="w-full max-w-md flex flex-col gap-4">
-                      <Input
+                      <Field
                         formik={props}
                         name="data"
                         label="Username Or Email :"
                         placeholder="username or email"
                       />
-                      <Input
+                      <Field
                         formik={props}
                         name="password"
                         label="Password :"

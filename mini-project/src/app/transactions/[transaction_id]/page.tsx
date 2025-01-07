@@ -15,6 +15,7 @@ import { FaClock } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import { SlCalender } from "react-icons/sl";
 import authGuard from "@/hoc/authGuard";
+import { IOrderDetail, ITransaction } from "@/types/transaction";
 
 function OrderPage({ params }: { params: { transaction_id: string } }) {
   const [transaction, setTransaction] = useState<ITransaction | null>(null);
@@ -208,8 +209,15 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
 
         <h1 className="text-2xl font-semibold mb-2">Price Details</h1>
         <div className="flex justify-between items-center">
-          <span>Total Ticket Price</span>{" "}
-          <span>{formatPrice(transaction.totalPrice)}</span>
+          <span>Total Ticket Price</span>
+          <span>
+            {formatPrice(
+              transaction.OrderDetail.reduce(
+                (sum, ticket) => sum + ticket.ticketId.price * ticket.qty,
+                0
+              )
+            )}
+          </span>
         </div>
         {coupons && coupons.length > 0 && (
           <div className="flex flex-col gap-2 mt-4">
@@ -247,8 +255,16 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
           </div>
         )}
         <div className="flex justify-between items-center font-semibold text-xl border-t border-b border-dashed py-2">
-          <span>Total Pay</span>{" "}
-          <span>{formatPrice(transaction.finalPrice)}</span>
+          <span>Total Pay</span>
+          <span>
+            {formatPrice(
+              transaction.OrderDetail.reduce(
+                (sum, ticket) => sum + ticket.ticketId.price * ticket.qty,
+                0
+              ) *
+                (1 - (transaction.user.coupon?.discountAmount || 0) / 100)
+            )}
+          </span>
         </div>
         <div className="flex justify-center items-center">
           {token && <PayButton token={token} />}

@@ -1,12 +1,11 @@
 "use client";
 
 import * as Yup from "yup";
-import { Form, Formik, FormikProps } from "formik";
+import { Field, Form, Formik, FormikProps } from "formik";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { Input } from "@/components/form/input";
 
 export default function VerifyPage({ params }: { params: { token: string } }) {
   const router = useRouter();
@@ -30,22 +29,25 @@ export default function VerifyPage({ params }: { params: { token: string } }) {
     setIsLoading(true);
     try {
       // Kirim permintaan PATCH ke endpoint API dengan token
-      const base_url = process.env.NEXT_PUBLIC_BASE_URL_BE;
-      await fetch(`${base_url}/users/forgot-password`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          token: params.token,
-          newPassword: values.password,
-        }),
-      });
+      await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL_BE}/users/forgot-password`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            token: params.token,
+            newPassword: values.password,
+          }),
+        }
+      );
 
       // Tampilkan pesan keberhasilan
       toast.success("Password updated successfully!");
       router.push("/login");
     } catch (error) {
+      console.log(error);
       // Tangani error dan tampilkan pesan kepada user
       const message = "Failed to update password!";
       toast.error(message);
@@ -83,7 +85,7 @@ export default function VerifyPage({ params }: { params: { token: string } }) {
               >
                 {(props: FormikProps<FormValues>) => (
                   <Form className="w-full max-w-md flex flex-col gap-4">
-                    <Input
+                    <Field
                       formik={props}
                       name="password"
                       label="New Password:"

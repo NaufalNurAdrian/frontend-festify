@@ -1,21 +1,4 @@
-// interface IEvent {
-//   title: string;
-//   thumbnail: string;
-//   startTime: string;
-//   endTime: string;
-//   location: string;
-//   category: string;
-// }
-
-// interface ITicket {
-//   ticket_id: number;
-//   type: string;
-//   price: number;
-//   seats: number;
-//   event: IEvent;
-// }
-
-interface IOrderDetail {
+export interface IOrderDetail {
   qty: number;
   ticketId: {
     ticket_id: number;
@@ -31,7 +14,7 @@ interface IOrderDetail {
   };
 }
 
-interface ITransaction {
+export interface ITransaction {
   transaction_id: string;
   expiredAt: string;
   totalPrice: number;
@@ -44,5 +27,5 @@ interface ITransaction {
       expiresAt: string;
       used: string;
     };
-  }; // Array of order details
+  };
 }

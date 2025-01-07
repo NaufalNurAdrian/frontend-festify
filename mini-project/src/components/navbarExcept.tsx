@@ -1,10 +1,22 @@
-"use client"
+"use client";
 
-import { usePathname } from "next/navigation"
+import { usePathname } from "next/navigation";
 import Navbar from "./navbar";
 
 export default function NavbarExcept() {
-    const pathname = usePathname();
-    const noNavbarRoutes = ["/dashboard", "/login", "/register", "/dashboard/profile", "/dashboard/create", "/dashboard/myevent", "/dashboard/settings", "/signup", "/dashboard/myticket", "/forgotpass"]
-    return noNavbarRoutes.includes(pathname) ? null : <Navbar />
+  const pathname = usePathname();
+  const noNavbarRoutes = [
+    "/dashboard",
+    "/login",
+    "/register",
+    "/dashboard/profile",
+    "/dashboard/create",
+    "/dashboard/myevent",
+    "/dashboard/settings",
+    "/signup",
+    "/dashboard/myticket",
+    "/forgotpass",
+    "/dashboard/review",
+  ];
+  return noNavbarRoutes.includes(pathname) ? null : <Navbar />;
 }

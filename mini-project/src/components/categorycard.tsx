@@ -6,7 +6,8 @@ import { BiMusic } from "react-icons/bi";
 import { CgGames } from "react-icons/cg";
 import { GiFilmProjector } from "react-icons/gi";
 import { MdOutlineSportsVolleyball } from "react-icons/md";
-import { getEvent } from "@/libs/events"; // Pastikan fungsi getEvent tersedia
+import { getEvent } from "@/libs/events";
+// Pastikan fungsi getEvent tersedia
 
 // Interface untuk kategori
 interface Category {
@@ -88,7 +89,7 @@ export default function CategoryCards() {
     };
 
     fetchData();
-  }, [allCategories]);
+  }, []);
 
   return (
     <div className="lg:flex container mx-auto md:flex justify-center gap-5 py-14 hidden ">

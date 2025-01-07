@@ -33,18 +33,10 @@ const EventTabs: React.FC<EventTabsProps> = ({ data }) => {
   const [activeTab, setActiveTab] = useState("DESKRIPSI");
   const [totalPrice, setTotalPrice] = useState(data.Ticket?.[0]?.price || 0);
   const [selectedTicketCount, setSelectedTicketCount] = useState(0);
-  const [selectedTicketType, setSelectedTicketType] = useState<string>("");
+  const [selectedTicketTypes, setSelectedTicketTypes] = useState<string[]>([]);
   const [OrderDetail, setOrderDetail] = useState<ITicketContext[] | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
-  if (loading) {
-    return (
-      <div className="loaderx-wrapper">
-        <div className="loaderx"></div>
-      </div>
-    );
-  }
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -75,6 +67,9 @@ const EventTabs: React.FC<EventTabsProps> = ({ data }) => {
       if (ticketIndex >= 0) {
         if (seatsToBuy === 0) {
           updatedOrderDetail.splice(ticketIndex, 1);
+          setSelectedTicketTypes((prevTypes) =>
+            prevTypes.filter((type) => type !== ticketType)
+          );
         } else {
           updatedOrderDetail[ticketIndex].qty = seatsToBuy;
         }
@@ -84,6 +79,9 @@ const EventTabs: React.FC<EventTabsProps> = ({ data }) => {
             ticketId: selectedTicket,
             qty: seatsToBuy,
           });
+          setSelectedTicketTypes((prevTypes) =>
+            Array.from(new Set([...prevTypes, ticketType]))
+          );
         }
       }
 
@@ -91,33 +89,36 @@ const EventTabs: React.FC<EventTabsProps> = ({ data }) => {
     });
 
     setTotalPrice(newTotalPrice);
-    setSelectedTicketCount(
-      OrderDetail ? OrderDetail.reduce((sum, item) => sum + item.qty, 0) : 0
-    );
-    setSelectedTicketType(ticketType);
   };
+
+  useEffect(() => {
+    if (OrderDetail) {
+      const totalTickets = OrderDetail.reduce((sum, item) => sum + item.qty, 0);
+      setSelectedTicketCount(totalTickets);
+    } else {
+      setSelectedTicketCount(0);
+    }
+  }, [OrderDetail]);
 
   const handleOrderTicket = async () => {
     if (!OrderDetail || OrderDetail.length === 0) {
       alert("Please select at least one ticket.");
       return;
     }
-    setLoading(false);
+    setLoading(true);
     try {
       const bodyParameters = {
         totalPrice,
         finalPrice: totalPrice,
         OrderDetail: OrderDetail.map((item) => ({
           ticketId: {
-            ticket_id: item.ticketId.ticket_id, // Pastikan ticket_id ada
+            ticket_id: item.ticketId.ticket_id,
             type: item.ticketId.type,
             price: item.ticketId.price,
           },
           qty: item.qty,
         })),
       };
-
-      console.log("Payload sent to backend:", bodyParameters);
 
       const { data } = await axios.post("/transactions", bodyParameters, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -126,27 +127,11 @@ const EventTabs: React.FC<EventTabsProps> = ({ data }) => {
       router.push(`/transactions/${data.orderId}`);
     } catch (err) {
       console.error("Failed to process transaction:", err);
-      toast.error("Please login or register before buy tickets!");
+      toast.error("Please login or register before buying tickets!");
+    } finally {
+      setLoading(false);
     }
   };
-
-  const ticketType = selectedTicketType || data.Ticket?.[0]?.type || "";
-
-  useEffect(() => {
-    if (OrderDetail) {
-      setTotalPrice(
-        OrderDetail.reduce((a, b) => a + b.ticketId.price * b.qty, 0)
-      );
-    }
-  }, [OrderDetail]);
-
-  if (loading) {
-    return (
-      <div className="loaderx-wrapper">
-        <div className="loaderx"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-6xl mx-auto p-4 py-14">
@@ -238,7 +223,7 @@ const EventTabs: React.FC<EventTabsProps> = ({ data }) => {
             <p className="text-gray-600 ">
               {selectedTicketCount === 0
                 ? "You haven't selected a ticket yet. Please select one first."
-                : ticketType}
+                : selectedTicketTypes.join(", ")}
             </p>
           </div>
           <hr className="my-4" />
@@ -260,7 +245,7 @@ const EventTabs: React.FC<EventTabsProps> = ({ data }) => {
             onClick={handleOrderTicket}
             disabled={selectedTicketCount === 0}
           >
-            Buy Ticket
+            {loading ? "Loading..." : "Buy Ticket"}
           </button>
         </div>
       </div>

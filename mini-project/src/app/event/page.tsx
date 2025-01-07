@@ -2,14 +2,14 @@
 
 import React, { useEffect, useState } from "react";
 import EventCard from "@/components/cardevent";
-import { getEvent } from "@/libs/events";
+
 import {
   FaFilter,
   FaSortAmountDown,
   FaSortAmountUp,
   FaTimes,
 } from "react-icons/fa";
-import { useRouter, useSearchParams } from "next/navigation";
+import { getEvent } from "@/libs/events";
 
 interface Ticket {
   price: number;
@@ -41,9 +41,6 @@ export default function EventList() {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false); // For mobile sidebar toggle
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -60,11 +57,12 @@ export default function EventList() {
   }, []);
 
   useEffect(() => {
-    const filterFromUrl = searchParams.get("category");
+    const params = new URLSearchParams(window.location.search);
+    const filterFromUrl = params.get("category");
     if (filterFromUrl) {
       setFilterCategory(filterFromUrl); // Set the filter category based on the URL query
     }
-  }, [searchParams]);
+  }, []);
 
   // Filter events based on category
   const filteredEvents = events.filter((event) => {
@@ -96,7 +94,10 @@ export default function EventList() {
   const handleFilterChange = (category: string) => {
     setFilterCategory(category);
     // Update the URL with the selected category as a query parameter without navigating
-    router.replace(`/event?category=${category}`);
+    const params = new URLSearchParams(window.location.search);
+    params.set("category", category);
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    window.history.replaceState(null, "", newUrl);
   };
 
   // Handle page change
@@ -180,7 +181,6 @@ export default function EventList() {
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {/* Menampilkan skeleton sesuai dengan jumlah event yang ada */}
             {Array.from({ length: Math.max(events.length, 8) }).map(
               (_, idx) => (
                 <div key={idx}>
