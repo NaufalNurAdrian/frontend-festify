@@ -40,7 +40,8 @@ function Tickets() {
           console.log("Login First");
           return;
         }
-        const response = await fetch("http://localhost:8000/api/users/ticket", {
+        const base_url = process.env.NEXT_PUBLIC_BASE_URL_BE;
+        const response = await fetch(`${base_url}/users/ticket`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
