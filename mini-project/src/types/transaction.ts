@@ -21,12 +21,12 @@ export interface ITransaction {
   finalPrice: number;
   OrderDetail: IOrderDetail[];
   user: {
+    points: number;
     coupon: {
       coupon_id: number;
       discountAmount: number;
       expiresAt: string;
       used: string;
-    },
-    points: number
+    };
   };
 }
