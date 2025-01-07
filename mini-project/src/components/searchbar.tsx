@@ -1,7 +1,7 @@
 "use client";
 
 import { IEvent } from "@/types/event";
-import { useRouter } from "next/navigation";
+
 import React, { useCallback, useEffect, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { useDebounce } from "use-debounce";
@@ -16,7 +16,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ isMobile = false }) => {
   const base_url = process.env.NEXT_PUBLIC_BASE_URL_BE;
 
   const [searchVisible, setSearchVisible] = useState(false);
-  const router = useRouter();
   const [events, setEvents] = useState<IEvent[]>([]);
   const [value, setValue] = useState<string>("");
   const [text] = useDebounce(value, 500);
