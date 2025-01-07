@@ -24,11 +24,7 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
   const [coupons, setCoupons] = useState<
     ITransaction["user"]["coupon"][] | null
   >(null);
-  const [points, setPoints] = useState<ITransaction["user"]["points"][] | null>(
-    null
-  );
   const [selectedCoupon, setSelectedCoupon] = useState<number | null>(null);
-  const [selectedPoint, setSelectedPoint] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,7 +43,6 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
 
         // Ambil kupon yang tersedia
         setCoupons([fetchedTransaction.user.coupon]);
-        setPoints([fetchedTransaction.user.points]);
 
         setLoading(false);
       } catch (error) {
@@ -60,12 +55,12 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
   }, [params.transaction_id]);
 
   const handleApplyCoupon = async () => {
-    if (!selectedCoupon || !selectedPoint || !transaction) return;
+    if (!selectedCoupon || !transaction) return;
 
     try {
       const response = await applyCoupon(
         transaction.transaction_id,
-        selectedCoupon.toString() || selectedPoint?.toString()
+        selectedCoupon.toString()
       );
 
       if (response.message === "Coupon applied successfully") {
@@ -104,38 +99,6 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
           `Coupon applied successfully! Discount: ${coupon.discountAmount}%`
         );
       }
-
-      if (response.message === "Coupon applied successfully") {
-        const point = points?.find((point) => point === selectedPoint);
-
-        if (!point) {
-          alert("point not found");
-          return;
-        }
-
-        const discountAmount = transaction.totalPrice - point;
-        const finalPrice = transaction.totalPrice - discountAmount;
-
-        const updatedTransaction = await getTransactionDetail(
-          params.transaction_id
-        );
-
-        setTransaction((prevTransaction) => {
-          if (!prevTransaction) {
-            return {
-              ...updatedTransaction,
-              finalPrice,
-            };
-          }
-
-          return {
-            ...prevTransaction,
-            finalPrice,
-          };
-        });
-
-        alert(`point applied successfully! Discount: ${point}`);
-      }
     } catch (error) {
       alert("Failed to apply coupon. Please try again.");
       console.error(error);
@@ -153,6 +116,18 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
   if (!transaction) {
     return <div>No transaction found.</div>;
   }
+
+  // Menghitung Total Harga Tiket
+  const totalTicketPrice = transaction.OrderDetail.reduce(
+    (sum, ticket) => sum + ticket.ticketId.price * ticket.qty,
+    0
+  );
+
+  // Menghitung Final Price jika ada Diskon
+  const finalPrice = selectedCoupon
+    ? totalTicketPrice -
+      (totalTicketPrice * (coupons?.[0]?.discountAmount || 0)) / 100
+    : totalTicketPrice;
 
   return (
     <main className="container mx-auto w-full flex gap-16 tablet:flex-row flex-col px-4 tablet:px-20 py-4">
@@ -247,48 +222,8 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
         <h1 className="text-2xl font-semibold mb-2">Price Details</h1>
         <div className="flex justify-between items-center">
           <span>Total Ticket Price</span>
-          <span>
-            {formatPrice(
-              transaction.OrderDetail.reduce(
-                (sum, ticket) => sum + ticket.ticketId.price * ticket.qty,
-                0
-              )
-            )}
-          </span>
+          <span>{formatPrice(totalTicketPrice)}</span>
         </div>
-
-        {points && points.length > 0 && (
-          <div className="flex flex-col gap-2 mt-4">
-            <label htmlFor="coupon" className="font-semibold">
-              Select Point
-            </label>
-            <select
-              id="coupon"
-              className="border rounded-2xl px-2 py-1"
-              value={selectedPoint || ""}
-              onChange={(e) => setSelectedPoint(Number(e.target.value))}
-            >
-              <option value="">No Coupon</option>
-              {points?.map((point) => (
-                <option
-                  key={point}
-                  value={point}
-                  disabled={!point} // Disable jika Used === true
-                >
-                  {point}
-                </option>
-              ))}
-            </select>
-            <button
-              onClick={handleApplyCoupon}
-              className="bg-red text-white px-4 py-2 rounded-2xl mt-2 w-[15%]"
-              disabled={!selectedPoint} // Tombol disable jika tidak ada kupon dipilih
-            >
-              Apply Point
-            </button>
-          </div>
-        )}
-
         {coupons && coupons.length > 0 && (
           <div className="flex flex-col gap-2 mt-4">
             <label htmlFor="coupon" className="font-semibold">
@@ -326,15 +261,7 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
         )}
         <div className="flex justify-between items-center font-semibold text-xl border-t border-b border-dashed py-2">
           <span>Total Pay</span>
-          <span>
-            {formatPrice(
-              transaction.OrderDetail.reduce(
-                (sum, ticket) => sum + ticket.ticketId.price * ticket.qty,
-                0
-              ) *
-                (1 - (transaction.user.coupon?.discountAmount || 0) / 100)
-            )}
-          </span>
+          <span>{formatPrice(finalPrice)}</span>
         </div>
         <div className="flex justify-center items-center">
           {token && <PayButton token={token} />}
