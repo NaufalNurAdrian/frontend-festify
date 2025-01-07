@@ -10,16 +10,7 @@ import {
   MdOutlineKeyboardArrowRight,
 } from "react-icons/md";
 import { IEvent } from "@/types/event";
-
-// Fungsi untuk mengambil data event dari API
-const getEvent = async () => {
-  const base_url = process.env.NEXT_PUBLIC_BASE_URL_BE;
-  const res = await fetch(`${base_url}/event`, {
-    next: { revalidate: 10 },
-  });
-  const data = await res.json();
-  return data.events;
-};
+import { getEvent } from "@/libs/events";
 
 export default function Carousel() {
   const [images, setImages] = useState<string[]>([]);
@@ -27,7 +18,7 @@ export default function Carousel() {
   useEffect(() => {
     // Ambil data event dan ekstrak thumbnail
     const fetchEvents = async () => {
-      const events = await getEvent();
+      const events = await getEvent(); // Use the imported function
       const thumbnails = events.map((event: IEvent) => event.thumbnail); // Ambil hanya thumbnail
       setImages(thumbnails);
     };

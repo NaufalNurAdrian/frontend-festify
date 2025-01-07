@@ -1,10 +1,9 @@
 "use client";
 
 import * as Yup from "yup";
-import { Formik, Form, FormikProps } from "formik";
+import { Formik, Form, FormikProps, Field } from "formik";
 import { toast } from "react-toastify";
 import { useState } from "react";
-import { Input } from "@/components/form/input";
 import Image from "next/image";
 import axios from "axios";
 
@@ -32,12 +31,7 @@ export default function ForgotPass() {
         {/* Left Section */}
         <div className="md:flex-1 flex-col items-center justify-center hidden lg:flex">
           <div>
-            <Image
-              src="/auth.png"
-              alt="login image"
-              width={500}
-              height={500}
-            />
+            <Image src="/auth.png" alt="login image" width={500} height={500} />
           </div>
           <div>
             <h1 className="text-2xl font-bold mt-4">Welcome</h1>
@@ -61,15 +55,15 @@ export default function ForgotPass() {
                       "http://localhost:8000/api/users/verify-forgot",
                       values
                     );
-
                     // Tampilkan notifikasi keberhasilan
-                    toast.success( "Email sent successfully!");
+                    toast.success("Email sent successfully!");
 
                     // Reset form setelah berhasil
                     actions.resetForm();
-                  } catch (error: any) {
+                  } catch (error) {
+                    console.log(error);
                     // Tangani error
-                    
+
                     toast.error("error");
                   } finally {
                     setIsLoading(false);
@@ -79,7 +73,7 @@ export default function ForgotPass() {
                 {(props: FormikProps<FormValues>) => {
                   return (
                     <Form className="w-full max-w-md flex flex-col gap-4">
-                      <Input
+                      <Field
                         formik={props}
                         name="data"
                         label="Username Or Email :"

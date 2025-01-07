@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
@@ -34,8 +32,9 @@ const formats = [
   "indent",
 ];
 
+// Define specific types instead of `any`
 interface FieldRichTextProps {
-  setFieldValue: (a: any, b: any) => void;
+  setFieldValue: (field: string, value: string) => void; // Specify 'field' as string, and 'value' as string
 }
 
 const RichTextEditor: React.FC<FieldRichTextProps> = ({ setFieldValue }) => {
@@ -43,7 +42,7 @@ const RichTextEditor: React.FC<FieldRichTextProps> = ({ setFieldValue }) => {
 
   const handleChange = (e: string) => {
     setValue(e);
-    setFieldValue("description", e);
+    setFieldValue("description", e); // Updating with a string value
   };
 
   useEffect(() => {

@@ -1,18 +1,15 @@
 "use client";
 
 import * as Yup from "yup";
-import { Form, Formik, FormikProps } from "formik";
+import { Field, Form, Formik, FormikProps } from "formik";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { Input } from "@/components/form/input";
-import axios from "axios";
 
 export default function VerifyPage({ params }: { params: { token: string } }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  
 
   const ForgotPassSchema = Yup.object().shape({
     password: Yup.string()
@@ -32,23 +29,27 @@ export default function VerifyPage({ params }: { params: { token: string } }) {
     setIsLoading(true);
     try {
       // Kirim permintaan PATCH ke endpoint API dengan token
-      await fetch(`${process.env.NEXT_PUBLIC_BASE_URL_BE}/users/forgot-password`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          token: params.token,
-          newPassword: values.password
-        }),
-      });
+      await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL_BE}/users/forgot-password`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            token: params.token,
+            newPassword: values.password,
+          }),
+        }
+      );
 
       // Tampilkan pesan keberhasilan
-      toast.success( "Password updated successfully!");
+      toast.success("Password updated successfully!");
       router.push("/login");
-    } catch (error: any) {
+    } catch (error) {
+      console.log(error);
       // Tangani error dan tampilkan pesan kepada user
-      const message = error.response?.data?.message || "Failed to update password!";
+      const message = "Failed to update password!";
       toast.error(message);
     } finally {
       setIsLoading(false);
@@ -64,12 +65,7 @@ export default function VerifyPage({ params }: { params: { token: string } }) {
         {/* Left Section */}
         <div className="md:flex-1 flex-col items-center justify-center hidden lg:flex">
           <div>
-            <Image
-              src="/auth.png"
-              alt="login image"
-              width={500}
-              height={500}
-            />
+            <Image src="/auth.png" alt="login image" width={500} height={500} />
           </div>
           <div>
             <h1 className="text-2xl font-bold mt-4">Welcome</h1>
@@ -89,7 +85,7 @@ export default function VerifyPage({ params }: { params: { token: string } }) {
               >
                 {(props: FormikProps<FormValues>) => (
                   <Form className="w-full max-w-md flex flex-col gap-4">
-                    <Input
+                    <Field
                       formik={props}
                       name="password"
                       label="New Password:"

@@ -2,13 +2,9 @@
 
 import { IEvent } from "@/types/event";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-
 import React, { useCallback, useEffect, useState } from "react";
 import { FiSearch } from "react-icons/fi";
-import { TbFilter } from "react-icons/tb";
 import { useDebounce } from "use-debounce";
-import EventCard from "./cardevent";
-import Image from "next/image";
 import { formatDate } from "@/helpers/formatDate";
 import Link from "next/link";
 

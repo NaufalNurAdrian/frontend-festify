@@ -15,15 +15,16 @@ import { FaClock } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import { SlCalender } from "react-icons/sl";
 import authGuard from "@/hoc/authGuard";
+import { IOrderDetail, ITransaction } from "@/types/transaction";
 
 function OrderPage({ params }: { params: { transaction_id: string } }) {
   const [transaction, setTransaction] = useState<ITransaction | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [coupons, setCoupons] = useState<ITransaction["user"]["coupon"][] | null>(null);
-  const [points, setPoints] = useState<ITransaction["user"]["points"][] | null>(null);
+  const [coupons, setCoupons] = useState<
+    ITransaction["user"]["coupon"][] | null
+  >(null);
   const [selectedCoupon, setSelectedCoupon] = useState<number | null>(null);
-  const [selectedPoint, setSelectedPoint] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -72,7 +73,6 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
           alert("Coupon not found");
           return;
         }
-
 
         const discountAmount =
           (transaction.totalPrice * coupon.discountAmount) / 100;
@@ -331,13 +331,14 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
           </div>
         )}
         <div className="flex justify-between items-center font-semibold text-xl border-t border-b border-dashed py-2">
-          <span>Total Pay</span>{" "}
+          <span>Total Pay</span>
           <span>
             {formatPrice(
               transaction.OrderDetail.reduce(
                 (sum, ticket) => sum + ticket.ticketId.price * ticket.qty,
                 0
-              )
+              ) *
+                (1 - (transaction.user.coupon?.discountAmount || 0) / 100)
             )}
           </span>
         </div>

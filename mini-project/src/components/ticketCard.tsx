@@ -2,13 +2,13 @@ import { formatDate, formatDateTime } from "@/helpers/formatDate";
 import React, { useState } from "react";
 import { FaExclamationTriangle, FaMinus, FaPlus } from "react-icons/fa";
 import { FiClock } from "react-icons/fi";
-import { Slide, toast, ToastContainer } from "react-toastify";
+import { Slide, toast } from "react-toastify";
 
 interface TicketProps {
   type: string;
   price: number;
   seats: number;
- ticket_id: number;
+  ticket_id: number;
   lastOrder: string;
   onUpdateSeats: (
     ticket_id: number,
@@ -21,7 +21,6 @@ interface TicketProps {
 const TicketCard: React.FC<TicketProps> = ({
   type,
   price,
-  seats,
   ticket_id,
   lastOrder,
   onUpdateSeats,

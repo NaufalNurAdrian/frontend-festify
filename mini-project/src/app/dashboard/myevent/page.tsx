@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from "react";
 import EventCard from "@/components/cardevent";
 import authGuard from "@/hoc/authGuard";
@@ -86,6 +86,5 @@ const MyEventPage = () => {
     </div>
   );
 };
-
 
 export default authGuard(MyEventPage);
