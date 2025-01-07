@@ -282,7 +282,6 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
                   } // Disable jika Used === true
                 >
                   {point}
-                  Refferal Point {point}%
                 </option>
               ))}
             </select>
