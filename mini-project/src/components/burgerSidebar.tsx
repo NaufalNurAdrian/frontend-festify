@@ -7,7 +7,6 @@ import { IoCreateOutline } from "react-icons/io5";
 import { LuTicket } from "react-icons/lu";
 import { BiHome } from "react-icons/bi";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 
 interface BurgerSidebarProps {
   isMenuOpen: boolean;
@@ -19,7 +18,6 @@ const BurgerSidebar: React.FC<BurgerSidebarProps> = ({
   toggleMenu,
 }) => {
   const [role, setRole] = useState("CUSTOMER"); // Nilai awal default
-    const [loading, setLoading] = useState(false);
   
     // Mengambil role dari localStorage hanya di sisi klien
     useEffect(() => {
@@ -31,20 +29,7 @@ const BurgerSidebar: React.FC<BurgerSidebarProps> = ({
       }
     }, []);
   
-    const changeRole = (newRole: string) => {
-      setLoading(true);
-      try {
-        if (typeof window !== "undefined") {
-          localStorage.setItem("role", newRole); // Simpan role ke localStorage
-        }
-        setRole(newRole); // Update state local
-      } catch (err) {
-        console.error(err);
-        toast.error("Fail to Change Role");
-      } finally {
-        setLoading(false);
-      }
-    };
+    
   return (
     <>
       {isMenuOpen && (
