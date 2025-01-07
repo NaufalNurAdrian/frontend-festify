@@ -15,19 +15,16 @@ import { FaClock } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import { SlCalender } from "react-icons/sl";
 import authGuard from "@/hoc/authGuard";
+import { IOrderDetail, ITransaction } from "@/types/transaction";
 
-function OrderPage({
-  params,
-}: {
-  params: { transaction_id: string };
-}) {
+function OrderPage({ params }: { params: { transaction_id: string } }) {
   const [transaction, setTransaction] = useState<ITransaction | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [coupons, setCoupons] = useState<
     ITransaction["user"]["coupon"][] | null
   >(null);
-  const [selectedCoupon, setSelectedCoupon] = useState<number | null>(null); // State untuk kupon yang dipilih
+  const [selectedCoupon, setSelectedCoupon] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,14 +58,12 @@ function OrderPage({
     if (!selectedCoupon || !transaction) return;
 
     try {
-      // Step 1: Apply the coupon to get the response
       const response = await applyCoupon(
         transaction.transaction_id,
         selectedCoupon.toString()
       );
 
       if (response.message === "Coupon applied successfully") {
-        // Step 2: Find the selected coupon and ensure it’s a percentage
         const coupon = coupons?.find(
           (coupon) => coupon.coupon_id === selectedCoupon
         );
@@ -78,28 +73,25 @@ function OrderPage({
           return;
         }
 
-        // Step 3: Calculate the discount amount as a percentage of the total price
         const discountAmount =
           (transaction.totalPrice * coupon.discountAmount) / 100;
         const finalPrice = transaction.totalPrice - discountAmount;
 
-        // Step 4: Update the transaction details with the new final price
         const updatedTransaction = await getTransactionDetail(
           params.transaction_id
         );
 
-        // Step 5: Update the state with the new final price after applying the discount
         setTransaction((prevTransaction) => {
           if (!prevTransaction) {
             return {
               ...updatedTransaction,
-              finalPrice, // Set the new final price after discount
+              finalPrice,
             };
           }
 
           return {
             ...prevTransaction,
-            finalPrice, // Set the new final price after discount
+            finalPrice,
           };
         });
 
@@ -130,7 +122,6 @@ function OrderPage({
       <div className="container mx-auto w-full tablet-[60%] justify-center">
         <h1 className="text-2xl font-semibold my-2">Order Details</h1>
         <div className="relative bg-rose-50 border border-red rounded-lg p-6 mb-6 max-w-5xl mx-auto border-dashed clip-path-notch">
-          {/* Informasi Tiket */}
           <div className="py-4 flex flex-col gap-2">
             {transaction.OrderDetail && transaction.OrderDetail.length > 0 ? (
               <>
@@ -167,7 +158,6 @@ function OrderPage({
             )}
           </div>
 
-          {/* Tabel Tiket */}
           <table className="w-full mt-4">
             <thead>
               <tr className="border-dashed border-t border-b border-black/50">
@@ -219,8 +209,15 @@ function OrderPage({
 
         <h1 className="text-2xl font-semibold mb-2">Price Details</h1>
         <div className="flex justify-between items-center">
-          <span>Total Ticket Price</span>{" "}
-          <span>{formatPrice(transaction.totalPrice)}</span>
+          <span>Total Ticket Price</span>
+          <span>
+            {formatPrice(
+              transaction.OrderDetail.reduce(
+                (sum, ticket) => sum + ticket.ticketId.price * ticket.qty,
+                0
+              )
+            )}
+          </span>
         </div>
         {coupons && coupons.length > 0 && (
           <div className="flex flex-col gap-2 mt-4">
@@ -234,24 +231,40 @@ function OrderPage({
               onChange={(e) => setSelectedCoupon(Number(e.target.value))}
             >
               <option value="">No Coupon</option>
-              {coupons.map((coupon) => (
-                <option key={coupon.coupon_id} value={coupon.coupon_id}>
-                  Use Refferal Discount {coupon.discountAmount}% - Expires:{" "}
-                  {formatDate(coupon.expiresAt)}
+              {coupons?.map((coupon) => (
+                <option
+                  key={coupon?.coupon_id}
+                  value={coupon?.coupon_id}
+                  disabled={
+                    !coupon || coupon.expiresAt < new Date().toISOString()
+                  } // Disable jika Used === true
+                >
+                  {coupon?.used ? "Already Used - " : ""}
+                  Refferal Discount {coupon?.discountAmount}% - Expires:{" "}
+                  {formatDate(coupon?.expiresAt)}
                 </option>
               ))}
             </select>
             <button
               onClick={handleApplyCoupon}
               className="bg-red text-white px-4 py-2 rounded-2xl mt-2 w-[15%]"
+              disabled={!selectedCoupon} // Tombol disable jika tidak ada kupon dipilih
             >
               Apply Coupon
             </button>
           </div>
         )}
         <div className="flex justify-between items-center font-semibold text-xl border-t border-b border-dashed py-2">
-          <span>Total Pay</span>{" "}
-          <span>{formatPrice(transaction.finalPrice)}</span>
+          <span>Total Pay</span>
+          <span>
+            {formatPrice(
+              transaction.OrderDetail.reduce(
+                (sum, ticket) => sum + ticket.ticketId.price * ticket.qty,
+                0
+              ) *
+                (1 - (transaction.user.coupon?.discountAmount || 0) / 100)
+            )}
+          </span>
         </div>
         <div className="flex justify-center items-center">
           {token && <PayButton token={token} />}
@@ -261,4 +274,4 @@ function OrderPage({
   );
 }
 
-export default authGuard(OrderPage)
+export default authGuard(OrderPage);

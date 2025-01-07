@@ -7,11 +7,9 @@ import { IoCreateOutline } from "react-icons/io5";
 import { ImProfile } from "react-icons/im";
 import { RiSettings4Line } from "react-icons/ri";
 import { useState, useEffect } from "react";
-import { toast } from "react-toastify";
 
 export default function Sidebar() {
   const [role, setRole] = useState("CUSTOMER"); // Nilai awal default
-  const [loading, setLoading] = useState(false);
 
   // Mengambil role dari localStorage hanya di sisi klien
   useEffect(() => {
@@ -22,21 +20,6 @@ export default function Sidebar() {
       }
     }
   }, []);
-
-  const changeRole = (newRole: string) => {
-    setLoading(true);
-    try {
-      if (typeof window !== "undefined") {
-        localStorage.setItem("role", newRole); // Simpan role ke localStorage
-      }
-      setRole(newRole); // Update state local
-    } catch (err) {
-      console.error(err);
-      toast.error("Fail to Change Role");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="bg-codgray text-white rounded-r-xl h-screen w-52 p-2 hidden lg:block fixed">

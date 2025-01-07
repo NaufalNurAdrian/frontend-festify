@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import { useSession } from "@/components/context/useSession";
 import UserCoupon from "@/components/userCopuon";
 import authGuard from "@/hoc/authGuard";
+import Image from "next/image";
 
 function AdminProfile() {
   const base_url = process.env.NEXT_PUBLIC_BASE_URL_BE;
@@ -38,66 +39,71 @@ function AdminProfile() {
   };
 
   // Handle avatar change
-const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-  const file = event.target.files?.[0];
-  if (!file) return;
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-  Swal.fire({
-    title: "Are you sure?",
-    text: "Do you want to update your avatar?",
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonText: "Yes, update it!",
-    cancelButtonText: "Cancel",
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      const formData = new FormData();
-      formData.append("avatar", file);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to update your avatar?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, update it!",
+      cancelButtonText: "Cancel",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const formData = new FormData();
+        formData.append("avatar", file);
 
-      try {
-        setIsLoading(true);
+        try {
+          setIsLoading(true);
 
-        const token = localStorage.getItem("token");
-        if (!token) {
-          Swal.fire("Error", "Please log in to update your profile.", "error");
-          return;
-        }
+          const token = localStorage.getItem("token");
+          if (!token) {
+            Swal.fire(
+              "Error",
+              "Please log in to update your profile.",
+              "error"
+            );
+            return;
+          }
 
-        const response = await fetch(`${base_url}/users/avatar`, {
-          method: "PATCH",
-          body: formData,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+          const response = await fetch(`${base_url}/users/avatar`, {
+            method: "PATCH",
+            body: formData,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
 
-        if (response.ok) {
-          Swal.fire(
-            "Success!",
-            "Your profile picture has been updated successfully!",
-            "success"
-          ).then(() => window.location.reload());
-        } else {
+          if (response.ok) {
+            Swal.fire(
+              "Success!",
+              "Your profile picture has been updated successfully!",
+              "success"
+            ).then(() => window.location.reload());
+          } else {
+            Swal.fire(
+              "Error!",
+              "Failed to update your profile picture. Please try again later.",
+              "error"
+            );
+          }
+        } catch (error) {
+          console.error("Error updating avatar:", error);
           Swal.fire(
             "Error!",
-            "Failed to update your profile picture. Please try again later.",
+            "Something went wrong. Please try again later.",
             "error"
           );
+        } finally {
+          setIsLoading(false);
         }
-      } catch (error) {
-        console.error("Error updating avatar:", error);
-        Swal.fire(
-          "Error!",
-          "Something went wrong. Please try again later.",
-          "error"
-        );
-      } finally {
-        setIsLoading(false);
       }
-    }
-  });
-};
-
+    });
+  };
 
   const triggerFileInput = () => {
     if (fileInputRef.current) {
@@ -149,13 +155,17 @@ const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
       <div className="flex flex-col min-h-screen bg-gray-100 text-gray-800 p-5">
         <div className="flex-1 px-6 py-6">
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h1 className="text-3xl font-bold mb-6 text-center text-gray-900">Profile</h1>
+            <h1 className="text-3xl font-bold mb-6 text-center text-gray-900">
+              Profile
+            </h1>
             <div className="flex flex-col items-center lg:gap-8">
               {/* Profile Avatar */}
               <div className="relative">
-                <img
+                <Image
                   src={avatar || "/festifylogo.png"}
                   alt="Avatar"
+                  height={40}
+                  width={40}
                   className="w-40 h-40 rounded-full border-4 border-red shadow-lg cursor-pointer hover:opacity-90"
                   onClick={() => openModal(avatar || "/festifylogo.png")}
                 />
@@ -173,7 +183,9 @@ const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
               {/* Profile Info */}
               <div className="mt-6 text-center">
                 <div className="mb-4">
-                  <h2 className="text-lg font-semibold text-gray-900">Username</h2>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Username
+                  </h2>
                   <p className="text-gray-600">{username || "Not Available"}</p>
                 </div>
                 <div className="mb-4">
@@ -181,16 +193,26 @@ const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
                   <p className="text-gray-600">{email || "Not Available"}</p>
                 </div>
                 <div className="mb-4">
-                  <h2 className="text-lg font-semibold text-gray-900">Points</h2>
-                  <p className="text-gray-600">{points || 0 }</p>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Points
+                  </h2>
+                  <p className="text-gray-600">{points || 0}</p>
                 </div>
                 <div className="mb-4">
-                  <h2 className="text-lg font-semibold text-gray-900">Referral Code</h2>
-                  <p className="text-gray-600">{referralCode || "Not Available"}</p>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Referral Code
+                  </h2>
+                  <p className="text-gray-600">
+                    {referralCode || "Not Available"}
+                  </p>
                 </div>
                 <div className="mb-4">
-                  <h2 className="text-lg font-semibold text-gray-900">Last Login</h2>
-                  <p className="text-gray-600">{lastLogin || "Not Available"}</p>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Last Login
+                  </h2>
+                  <p className="text-gray-600">
+                    {lastLogin || "Not Available"}
+                  </p>
                 </div>
               </div>
             </div>
@@ -230,7 +252,7 @@ const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
           <div className="relative">
-            <img
+            <Image
               src={selectedImage!}
               alt="Full View"
               className="max-w-full max-h-screen rounded-lg"
@@ -247,4 +269,4 @@ const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     </>
   );
 }
- export default authGuard(AdminProfile)
+export default authGuard(AdminProfile);

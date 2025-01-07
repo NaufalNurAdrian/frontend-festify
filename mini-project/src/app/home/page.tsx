@@ -3,13 +3,13 @@ import Carousel from "@/components/carousel";
 import CategoryCards from "@/components/categorycard";
 import Features from "@/components/featuresHome";
 import { getEvent } from "@/libs/events";
+
 import { IEvent } from "@/types/event";
+import Link from "next/link";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 
 export default async function HomePage() {
-  const data: IEvent[] = await getEvent();
-  console.log("Fetched data:", data); // Debugging log
-
+  const data: IEvent[] = (await getEvent()) || [];
   // Slice the first 8 events
   const eventsToDisplay = data.slice(0, 8);
 
@@ -28,11 +28,14 @@ export default async function HomePage() {
       <div>
         <h1 className="container mx-auto pt-4 px-4 lg:px-0 text-xl font-medium text-codgray flex justify-between">
           Upcoming Events
-          <button className="text-base text-red hover:text-codgray flex items-center">
-            <span className="hover:text-red text-lg">
-              <MdOutlineKeyboardArrowRight />
-            </span>
-          </button>
+          <Link href="/event?category=All">
+            <button className="text-base text-red hover:text-codgray flex items-center">
+              <div className=" flex flex-row hover:text-red text-sm font-light items-center">
+                More Events
+                <MdOutlineKeyboardArrowRight />
+              </div>
+            </button>
+          </Link>
         </h1>
         <div className="container mx-auto h-px bg-gray-300 my-2" />
       </div>

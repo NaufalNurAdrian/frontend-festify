@@ -28,19 +28,33 @@ export default function DashboardData() {
           throw new Error("No token found. Please log in.");
         }
 
-        const [activeEventRes, deactiveEventRes, totalTransactionRes] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_BASE_URL_BE}/dashboard/event-active`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(`${process.env.NEXT_PUBLIC_BASE_URL_BE}/dashboard/event-deactive`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          fetch(`${process.env.NEXT_PUBLIC_BASE_URL_BE}/dashboard/event-transaction`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
+        const [activeEventRes, deactiveEventRes, totalTransactionRes] =
+          await Promise.all([
+            fetch(
+              `${process.env.NEXT_PUBLIC_BASE_URL_BE}/dashboard/event-active`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            ),
+            fetch(
+              `${process.env.NEXT_PUBLIC_BASE_URL_BE}/dashboard/event-deactive`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            ),
+            fetch(
+              `${process.env.NEXT_PUBLIC_BASE_URL_BE}/dashboard/event-transaction`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            ),
+          ]);
 
-        if (!activeEventRes.ok || !deactiveEventRes.ok || !totalTransactionRes.ok) {
+        if (
+          !activeEventRes.ok ||
+          !deactiveEventRes.ok ||
+          !totalTransactionRes.ok
+        ) {
           throw new Error("Failed to fetch dashboard data.");
         }
 
@@ -51,8 +65,9 @@ export default function DashboardData() {
         setActiveEvent(activeEventData.activeEvent || 0);
         setDeactiveEvent(deactiveEventData.deactiveEvent || 0);
         setTotalTransaction(totalTransactionData.totalTransaction || 0);
-      } catch (err: any) {
-        setError(err.message || "Something went wrong.");
+      } catch (err) {
+        console.log(err);
+        setError("Something went wrong.");
       } finally {
         setLoading(false);
       }
@@ -66,11 +81,7 @@ export default function DashboardData() {
   }
 
   if (error) {
-    return (
-      <div className="p-5 text-center text-red-500">
-        {error}
-      </div>
-    );
+    return <div className="p-5 text-center text-red-500">{error}</div>;
   }
 
   return (

@@ -12,7 +12,7 @@ export default function UserCoupon() {
   const [coupon, setCoupon] = useState<Coupon | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const base_url = `${process.env.NEXT_PUBLIC_BASE_URL_BE}`;
+  const base_url = process.env.NEXT_PUBLIC_BASE_URL_BE;
 
   useEffect(() => {
     const fetchCoupon = async () => {
@@ -64,7 +64,9 @@ export default function UserCoupon() {
           </p>
           <p className="text-gray-600">
             Expires on:{" "}
-            <span className="font-medium">{new Date(coupon.expiresAt).toLocaleDateString()}</span>
+            <span className="font-medium">
+              {new Date(coupon.expiresAt).toLocaleDateString()}
+            </span>
           </p>
         </div>
       ) : (
