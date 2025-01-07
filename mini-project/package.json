@@ -16,6 +16,7 @@
     "@heroicons/react": "^2.2.0",
     "@mui/material": "^6.2.0",
     "@mui/x-charts": "^7.23.2",
+    "@nextui-org/react": "^2.6.11",
     "apexcharts": "^4.2.0",
     "axios": "^1.7.9",
     "chart.js": "^4.4.7",

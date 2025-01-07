@@ -1,19 +1,19 @@
-// interface IEvent {
-//   title: string;
-//   thumbnail: string;
-//   startTime: string;
-//   endTime: string;
-//   location: string;
-//   category: string;
-// }
+interface IEvent {
+  title: string;
+  thumbnail: string;
+  startTime: string;
+  endTime: string;
+  location: string;
+  category: string;
+}
 
-// interface ITicket {
-//   ticket_id: number;
-//   type: string;
-//   price: number;
-//   seats: number;
-//   event: IEvent;
-// }
+interface ITicket {
+  ticket_id: number;
+  type: string;
+  price: number;
+  seats: number;
+  event: IEvent;
+}
 
 interface IOrderDetail {
   qty: number;
@@ -43,6 +43,7 @@ interface ITransaction {
       discountAmount: number;
       expiresAt: string;
       used: string;
-    };
+    },
+    points: number
   }; // Array of order details
 }

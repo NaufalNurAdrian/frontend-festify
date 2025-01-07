@@ -173,12 +173,22 @@ const AvatarModal = ({
               >
                 Explore
               </button>
+              {role === "CUSTOMER" && (
               <button
                 onClick={() => router.push("/dashboard/myticket")}
                 className="block w-full px-4 py-2 text-sm text-codgray dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 My Ticket
               </button>
+              )}
+              {role === "ORGANIZER" && (
+              <button
+                onClick={() => router.push("/dashboard/myticket")}
+                className="block w-full px-4 py-2 text-sm text-codgray dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                My Event
+              </button>
+              )}
               <hr className="border-b-0 border-l-0 border-r-0 border-t-1 mx-7 border-codgray" />
               <button
                 onClick={() => router.push("/dashboard/profile")}
