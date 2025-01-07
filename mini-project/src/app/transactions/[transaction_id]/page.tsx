@@ -15,16 +15,16 @@ import { FaClock } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import { SlCalender } from "react-icons/sl";
 import authGuard from "@/hoc/authGuard";
-import { IOrderDetail, ITransaction } from "@/types/transaction";
+import {  IOrderDetail, ITransaction } from "@/types/transaction";
 
 function OrderPage({ params }: { params: { transaction_id: string } }) {
   const [transaction, setTransaction] = useState<ITransaction | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [coupons, setCoupons] = useState<
-    ITransaction["user"]["coupon"][] | null
-  >(null);
+  const [coupons, setCoupons] = useState<ITransaction["user"]["coupon"][] | null>(null);
+  const [points, setPoints] = useState<ITransaction["user"]["points"][] | null>(null);
   const [selectedCoupon, setSelectedCoupon] = useState<number | null>(null);
+  const [selectedPoint, setSelectedPoint] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,6 +43,7 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
 
         // Ambil kupon yang tersedia
         setCoupons([fetchedTransaction.user.coupon]);
+        setPoints([fetchedTransaction.user.points]);
 
         setLoading(false);
       } catch (error) {
@@ -55,12 +56,12 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
   }, [params.transaction_id]);
 
   const handleApplyCoupon = async () => {
-    if (!selectedCoupon || !transaction) return;
+    if (!selectedCoupon || !selectedPoint || !transaction) return;
 
     try {
       const response = await applyCoupon(
         transaction.transaction_id,
-        selectedCoupon.toString()
+        selectedCoupon.toString() || selectedPoint.toString(),
       );
 
       if (response.message === "Coupon applied successfully") {
@@ -99,6 +100,46 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
           `Coupon applied successfully! Discount: ${coupon.discountAmount}%`
         );
       }
+      
+      if (response.message === "Coupon applied successfully") {
+        const point = points?.find(
+          (point) => point === selectedPoint
+        );
+
+        if (!point) {
+          alert("point not found");
+          return;
+        }
+
+
+        const discountAmount =
+          (transaction.totalPrice - point)
+        const finalPrice = transaction.totalPrice - discountAmount;
+
+        const updatedTransaction = await getTransactionDetail(
+          params.transaction_id
+        );
+
+        setTransaction((prevTransaction) => {
+          if (!prevTransaction) {
+            return {
+              ...updatedTransaction,
+              finalPrice,
+            };
+          }
+
+          return {
+            ...prevTransaction,
+            finalPrice,
+          };
+        });
+
+        alert(
+          `point applied successfully! Discount: ${point}`
+        );
+      }
+
+
     } catch (error) {
       alert("Failed to apply coupon. Please try again.");
       console.error(error);
@@ -219,6 +260,41 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
             )}
           </span>
         </div>
+        
+        {points && points.length > 0 && (
+          <div className="flex flex-col gap-2 mt-4">
+            <label htmlFor="coupon" className="font-semibold">
+              Select Point
+            </label>
+            <select
+              id="coupon"
+              className="border rounded-2xl px-2 py-1"
+              value={selectedCoupon || ""}
+              onChange={(e) => setSelectedCoupon(Number(e.target.value))}
+            >
+              <option value="">No Coupon</option>
+              {points?.map((point) => (
+                <option
+                  key={point}
+                  value={point}
+                  disabled={
+                    !point
+                  } // Disable jika Used === true
+                >
+                  {point}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={handleApplyCoupon}
+              className="bg-red text-white px-4 py-2 rounded-2xl mt-2 w-[15%]"
+              disabled={!selectedCoupon} // Tombol disable jika tidak ada kupon dipilih
+            >
+              Apply Coupon
+            </button>
+          </div>
+        )}
+
         {coupons && coupons.length > 0 && (
           <div className="flex flex-col gap-2 mt-4">
             <label htmlFor="coupon" className="font-semibold">

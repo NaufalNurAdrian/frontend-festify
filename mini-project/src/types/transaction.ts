@@ -26,6 +26,7 @@ export interface ITransaction {
       discountAmount: number;
       expiresAt: string;
       used: string;
-    };
+    },
+    points: number
   };
 }
