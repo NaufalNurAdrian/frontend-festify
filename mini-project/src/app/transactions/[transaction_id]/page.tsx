@@ -25,10 +25,6 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
     ITransaction["user"]["coupon"][] | null
   >(null);
   const [selectedCoupon, setSelectedCoupon] = useState<number | null>(null);
-  const [selecetedPoint, setSelecctedPoint] = useState<number | null>(null);
-  const [pointS, setPoints] = useState<ITransaction["user"]["points"][] | null>(
-    null
-  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,7 +43,6 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
 
         // Ambil kupon yang tersedia
         setCoupons([fetchedTransaction.user.coupon]);
-        setPoints([fetchedTransaction.user.points]);
 
         setLoading(false);
       } catch (error) {
@@ -60,57 +55,6 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
   }, [params.transaction_id]);
 
   const handleApplyCoupon = async () => {
-    if (!selectedCoupon || !transaction) return;
-
-    try {
-      const response = await applyCoupon(
-        transaction.transaction_id,
-        selectedCoupon.toString()
-      );
-
-      if (response.message === "Coupon applied successfully") {
-        const coupon = coupons?.find(
-          (coupon) => coupon.coupon_id === selectedCoupon
-        );
-
-        if (!coupon) {
-          alert("Coupon not found");
-          return;
-        }
-
-        const discountAmount =
-          (transaction.totalPrice * coupon.discountAmount) / 100;
-        const finalPrice = transaction.totalPrice - discountAmount;
-
-        const updatedTransaction = await getTransactionDetail(
-          params.transaction_id
-        );
-
-        setTransaction((prevTransaction) => {
-          if (!prevTransaction) {
-            return {
-              ...updatedTransaction,
-              finalPrice,
-            };
-          }
-
-          return {
-            ...prevTransaction,
-            finalPrice,
-          };
-        });
-
-        alert(
-          `Coupon applied successfully! Discount: ${coupon.discountAmount}%`
-        );
-      }
-    } catch (error) {
-      alert("Failed to apply coupon. Please try again.");
-      console.error(error);
-    }
-  };
-
-  const handleApply = async () => {
     if (!selectedCoupon || !transaction) return;
 
     try {
