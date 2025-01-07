@@ -270,7 +270,7 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
               id="coupon"
               className="border rounded-2xl px-2 py-1"
               value={selectedCoupon || ""}
-              onChange={(e) => setSelectedCoupon(Number(e.target.value))}
+              onChange={(e) => setSelectedPoint(Number(e.target.value))}
             >
               <option value="">No Coupon</option>
               {points?.map((point) => (
