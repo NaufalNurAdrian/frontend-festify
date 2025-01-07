@@ -1,7 +1,7 @@
 "use client";
 
 import { IEvent } from "@/types/event";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { useDebounce } from "use-debounce";
@@ -17,10 +17,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ isMobile = false }) => {
 
   const [searchVisible, setSearchVisible] = useState(false);
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const [events, setEvents] = useState<IEvent[]>([]);
-  const [value, setValue] = useState<string>(searchParams.get("keyword") || "");
+  const [value, setValue] = useState<string>("");
   const [text] = useDebounce(value, 500);
   const [isLoading, setIsloading] = useState<boolean>(false);
 
@@ -37,27 +35,24 @@ const SearchBar: React.FC<SearchBarProps> = ({ isMobile = false }) => {
     }
   };
 
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set(name, value);
-
-      return params.toString();
-    },
-    [searchParams]
-  );
+  const updateUrl = useCallback((keyword: string) => {
+    const params = new URLSearchParams(window.location.search);
+    if (keyword) {
+      params.set("keyword", keyword);
+    } else {
+      params.delete("keyword");
+    }
+    // Mengubah URL tanpa reload halaman menggunakan pushState
+    window.history.pushState(null, "", "?" + params.toString());
+  }, []);
 
   useEffect(() => {
-    if (text) {
-      // Jika ada teks, tambahkan query string ke URL
-      router.push(pathname + "?" + createQueryString("keyword", text));
-    } else {
-      // Jika tidak ada teks, kembalikan ke URL tanpa query string
-      router.push(pathname);
-    }
-    // Panggil fungsi untuk mengambil data baru berdasarkan pencarian
+    // Memanggil fungsi untuk mengambil data berdasarkan pencarian
     getData();
+    // Update URL setiap kali `text` berubah
+    updateUrl(text);
   }, [text]);
+
   // Fungsi untuk menutup modal search jika klik di luar modal
   const handleSearchClickOutside = (e: React.MouseEvent) => {
     const searchModal = document.getElementById("search-modal");
@@ -65,7 +60,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ isMobile = false }) => {
       setSearchVisible(false);
     }
   };
-  // tampilan mobile
+
+  // Tampilan mobile
   if (isMobile) {
     return (
       <>
@@ -129,7 +125,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ isMobile = false }) => {
       </>
     );
   }
-  // tampilan desktop
+
+  // Tampilan desktop
   return (
     <div className="hidden lg:flex items-center bg-gray-100 rounded-full shadow-sm p-2 w-full md:w-[500px]">
       <div className="flex items-center px-4 w-full">
