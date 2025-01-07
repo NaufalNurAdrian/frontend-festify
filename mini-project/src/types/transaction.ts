@@ -1,4 +1,4 @@
-interface IOrderDetail {
+export interface IOrderDetail {
   qty: number;
   ticketId: {
     ticket_id: number;
@@ -26,6 +26,7 @@ export interface ITransaction {
       discountAmount: number;
       expiresAt: string;
       used: string;
-    };
+    },
+    points: number
   };
 }

@@ -15,16 +15,16 @@ import { FaClock } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import { SlCalender } from "react-icons/sl";
 import authGuard from "@/hoc/authGuard";
-import { IOrderDetail, ITransaction } from "@/types/transaction";
+import {  IOrderDetail, ITransaction } from "@/types/transaction";
 
 function OrderPage({ params }: { params: { transaction_id: string } }) {
   const [transaction, setTransaction] = useState<ITransaction | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [coupons, setCoupons] = useState<
-    ITransaction["user"]["coupon"][] | null
-  >(null);
+  const [coupons, setCoupons] = useState<ITransaction["user"]["coupon"][] | null>(null);
+  const [points, setPoints] = useState<ITransaction["user"]["points"][] | null>(null);
   const [selectedCoupon, setSelectedCoupon] = useState<number | null>(null);
+  const [selectedPoint, setSelectedPoint] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -260,6 +260,7 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
             )}
           </span>
         </div>
+        
         {points && points.length > 0 && (
           <div className="flex flex-col gap-2 mt-4">
             <label htmlFor="coupon" className="font-semibold">
@@ -277,11 +278,11 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
                   key={point}
                   value={point}
                   disabled={
-                    !point 
+                    !point
                   } // Disable jika Used === true
                 >
                   {point}
-                  Refferal Discount {point}% - Expires:{" "}
+                  Refferal Point {point}%
                 </option>
               ))}
             </select>
