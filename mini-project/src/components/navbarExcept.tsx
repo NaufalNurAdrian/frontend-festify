@@ -17,6 +17,7 @@ export default function NavbarExcept() {
     "/dashboard/myticket",
     "/forgotpass",
     "/dashboard/review",
+    "/dashboard/gatein"
   ];
   return noNavbarRoutes.includes(pathname) ? null : <Navbar />;
 }

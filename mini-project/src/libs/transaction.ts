@@ -74,6 +74,39 @@ export async function applyCoupon(transaction_id: string, coupon_id: string) {
   }
 }
 
+// Fungsi untuk menerapkan poin
+export async function applyPoint(transaction_id: string, points: number) {
+  try {
+    // Ambil token dari localStorage
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Token not found in localStorage");
+      }
+
+      // Kirim request untuk apply points
+      const { data } = await axios.post(
+        "/transactions/applyPoint",
+        {
+          transaction_id,
+          points,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Points applied successfully:", data);
+      return data;
+    }
+  } catch (err) {
+    console.error("Error applying points:", err);
+    throw err;
+  }
+}
+
 export async function getCouponDetails(token: string) {
   try {
     const { data } = await axios.get(`/users/profle/coupon`, {
@@ -90,56 +123,5 @@ export async function getCouponDetails(token: string) {
   }
 }
 
-// Fungsi untuk mengambil user.point
-export async function getUserPoints() {
-  try {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("token");
 
-      if (!token) {
-        throw new Error("Token not found in localStorage");
-      }
 
-      const { data } = await axios.get(`/users/profile/points`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      console.log("User points:", data);
-      return data?.points; // Mengembalikan data poin pengguna
-    }
-  } catch (err) {
-    console.error("Error fetching user points:", err);
-    return null;
-  }
-}
-
-// Fungsi untuk mengurangi poin user
-export async function DeductUserPoints(points: number) {
-  try {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        throw new Error("Token not found in localStorage");
-      }
-
-      const { data } = await axios.post(
-        `/users/profile/points/deduct`,
-        { points },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      console.log("Points deducted:", data);
-      return data?.success; // Mengembalikan status keberhasilan
-    }
-  } catch (err) {
-    console.error("Error deducting user points:", err);
-    throw err;
-  }
-}
