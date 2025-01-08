@@ -8,6 +8,7 @@ export default function DashboardData() {
   const [activeEvent, setActiveEvent] = useState<number>(0);
   const [deactiveEvent, setDeactiveEvent] = useState<number>(0);
   const [totalTransaction, setTotalTransaction] = useState<number>(0);
+  const [totalAttendeEvent, setTotalAttende] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,7 +29,7 @@ export default function DashboardData() {
           throw new Error("No token found. Please log in.");
         }
 
-        const [activeEventRes, deactiveEventRes, totalTransactionRes] =
+        const [activeEventRes, deactiveEventRes, totalTransactionRes, totalAttendeRes] =
           await Promise.all([
             fetch(
               `${process.env.NEXT_PUBLIC_BASE_URL_BE}/dashboard/event-active`,
@@ -48,12 +49,20 @@ export default function DashboardData() {
                 headers: { Authorization: `Bearer ${token}` },
               }
             ),
+            fetch(
+              `${process.env.NEXT_PUBLIC_BASE_URL_BE}/dashboard/event-attende`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            ),
+
           ]);
 
         if (
           !activeEventRes.ok ||
           !deactiveEventRes.ok ||
-          !totalTransactionRes.ok
+          !totalTransactionRes.ok ||
+          !totalAttendeRes.ok
         ) {
           throw new Error("Failed to fetch dashboard data.");
         }
@@ -61,10 +70,12 @@ export default function DashboardData() {
         const activeEventData = await activeEventRes.json();
         const deactiveEventData = await deactiveEventRes.json();
         const totalTransactionData = await totalTransactionRes.json();
+        const totalAttendeData = await totalAttendeRes.json();
 
         setActiveEvent(activeEventData.activeEvent || 0);
         setDeactiveEvent(deactiveEventData.deactiveEvent || 0);
         setTotalTransaction(totalTransactionData.totalTransaction || 0);
+        setTotalAttende(totalAttendeData.totalAttendeEvent || 0);
       } catch (err) {
         console.log(err);
         setError("Something went wrong.");
@@ -113,7 +124,7 @@ export default function DashboardData() {
       {/* Total Pengunjung */}
       <div className="bg-white shadow p-4 rounded">
         <h3 className="font-bold text-lg">Total Pengunjung</h3>
-        <p>0 Orang</p>
+        <p>{totalAttendeEvent}</p>
       </div>
     </div>
   );

@@ -59,31 +59,30 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
 
   const handleApplyCoupon = async () => {
     if (!selectedCoupon || !transaction) return;
-
     try {
       const response = await applyCoupon(
         transaction.transaction_id,
         selectedCoupon.toString()
       );
-
+  
       if (response.message === "Coupon applied successfully") {
         const coupon = coupons?.find(
           (coupon) => coupon.coupon_id === selectedCoupon
         );
-
+  
         if (!coupon) {
           alert("Coupon not found");
           return;
         }
-
+  
         const discountAmount =
           (transaction.totalPrice * coupon.discountAmount) / 100;
         const finalPrice = transaction.totalPrice - discountAmount;
-
+  
         const updatedTransaction = await getTransactionDetail(
           params.transaction_id
         );
-
+  
         setTransaction((prevTransaction) => {
           if (!prevTransaction) {
             return {
@@ -91,13 +90,13 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
               finalPrice,
             };
           }
-
+  
           return {
             ...prevTransaction,
             finalPrice,
           };
         });
-
+  
         alert(
           `Coupon applied successfully! Discount: ${coupon.discountAmount}%`
         );
@@ -107,6 +106,45 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
       console.error(error);
     }
   };
+  
+  // const handleApplyPoint = async () => {
+  //   if (!selectedPoint || !transaction) return;
+  
+  //   try {
+  //     const pointValue = selectedPoint;
+  
+  //     if (!pointValue) {
+  //       alert("Point not valid");
+  //       return;
+  //     }
+  
+  //     const finalPrice = transaction.totalPrice - pointValue;
+  
+  //     const updatedTransaction = await getTransactionDetail(
+  //       params.transaction_id
+  //     );
+  
+  //     setTransaction((prevTransaction) => {
+  //       if (!prevTransaction) {
+  //         return {
+  //           ...updatedTransaction,
+  //           finalPrice,
+  //         };
+  //       }
+  
+  //       return {
+  //         ...prevTransaction,
+  //         finalPrice,
+  //       };
+  //     });
+  
+  //     alert(`Point applied successfully! Discount: ${pointValue}`);
+  //   } catch (error) {
+  //     alert("Failed to apply point. Please try again.");
+  //     console.error(error);
+  //   }
+  // };
+  
 
   if (loading) {
     return (

@@ -39,6 +39,11 @@ export default function Sidebar() {
                 <LuTicket /> My Event
               </div>
             </Link>
+            <Link href="/dashboard/gatein" className="hover:text-white">
+              <div className="flex p-2 items-center rounded-md h-8 hover:bg-slate-800 gap-5">
+                <LuTicket /> Scan Ticket
+              </div>
+            </Link>
             <Link href="/dashboard/create" className="hover:text-white">
               <div className="flex p-2 items-center rounded-md h-8 hover:bg-slate-800 gap-5">
                 <IoCreateOutline /> Create Event

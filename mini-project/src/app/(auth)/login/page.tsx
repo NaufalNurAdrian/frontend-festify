@@ -1,7 +1,7 @@
 "use client";
 
 import * as Yup from "yup";
-import { Formik, Form, FormikProps, Field } from "formik";
+import { Formik, Form, Field, ErrorMessage } from "formik";
 import { toast } from "react-toastify";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -33,9 +33,10 @@ export default function Login() {
 
   const handleLogin = async (user: FormValues) => {
     try {
-      console.log(user);
+      console.log("Login data:", user); // Debugging
       setIsLoading(true);
       const base_url = process.env.NEXT_PUBLIC_BASE_URL_BE;
+      console.log("Base url:", base_url); // Debugging
       const res = await fetch(`${base_url}/auth/login`, {
         method: "POST",
         headers: {
@@ -44,6 +45,8 @@ export default function Login() {
         body: JSON.stringify(user),
       });
       const result = await res.json();
+      console.log(result);
+      
       if (!res.ok) throw result;
       localStorage.setItem("token", result.token);
       localStorage.setItem("role", "CUSTOMER");
@@ -52,7 +55,7 @@ export default function Login() {
       router.push("/");
       toast.success(result.message);
     } catch (err) {
-      console.log(err);
+      console.error("Login error:", err); // Debugging
       toast.error("Cannot Login");
     } finally {
       setIsLoading(false);
@@ -87,36 +90,48 @@ export default function Login() {
                   actions.resetForm();
                 }}
               >
-                {(props: FormikProps<FormValues>) => {
-                  return (
-                    <Form className="w-full max-w-md flex flex-col gap-4">
+                {() => (
+                  <Form className="w-full max-w-md flex flex-col gap-4">
+                    {/* Data Field */}
+                    <div>
+                      <label htmlFor="data" className="block text-sm font-medium text-gray-700">
+                        Username or Email
+                      </label>
                       <Field
-                        formik={props}
+                        id="data"
                         name="data"
-                        label="Username Or Email :"
-                        placeholder="username or email"
+                        type="text"
+                        placeholder="Enter your username or email"
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                       />
+                      <ErrorMessage name="data" component="div" className="text-red-500 text-sm" />
+                    </div>
+                    {/* Password Field */}
+                    <div>
+                      <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                        Password
+                      </label>
                       <Field
-                        formik={props}
+                        id="password"
                         name="password"
-                        label="Password :"
                         type="password"
+                        placeholder="Enter your password"
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
                       />
-                      <Link href="/forgotpass">
-                        <div className="text-black text-sm">
-                          Forgot Password
-                        </div>
-                      </Link>
-                      <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="text-white disabled:bg-teal-300 disabled:cursor-wait bg-red hover:bg-rose-500 focus:ring-4 focus:outline-none focus:ring-teal-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
-                      >
-                        {isLoading ? "Loading ..." : "Login"}
-                      </button>
-                    </Form>
-                  );
-                }}
+                      <ErrorMessage name="password" component="div" className="text-red-500 text-sm" />
+                    </div>
+                    <Link href="/forgotpass">
+                      <div className="text-black text-sm">Forgot Password</div>
+                    </Link>
+                    <button
+                      type="submit"
+                      disabled={isLoading}
+                      className="text-white disabled:bg-teal-300 disabled:cursor-wait bg-red hover:bg-rose-500 focus:ring-4 focus:outline-none focus:ring-teal-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+                    >
+                      {isLoading ? "Loading ..." : "Login"}
+                    </button>
+                  </Form>
+                )}
               </Formik>
             </div>
           </div>
