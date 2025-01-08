@@ -36,6 +36,7 @@ export default function Login() {
       console.log("Login data:", user); // Debugging
       setIsLoading(true);
       const base_url = process.env.NEXT_PUBLIC_BASE_URL_BE;
+      console.log("Base url:", base_url); // Debugging
       const res = await fetch(`${base_url}/auth/login`, {
         method: "POST",
         headers: {
@@ -44,6 +45,8 @@ export default function Login() {
         body: JSON.stringify(user),
       });
       const result = await res.json();
+      console.log(result);
+      
       if (!res.ok) throw result;
       localStorage.setItem("token", result.token);
       localStorage.setItem("role", "CUSTOMER");
@@ -87,7 +90,7 @@ export default function Login() {
                   actions.resetForm();
                 }}
               >
-                {({ isSubmitting }) => (
+                {() => (
                   <Form className="w-full max-w-md flex flex-col gap-4">
                     {/* Data Field */}
                     <div>
