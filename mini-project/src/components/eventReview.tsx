@@ -1,4 +1,8 @@
+"use client";
+
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface Review {
   rating: number;
@@ -18,10 +22,25 @@ function EventReview({ eventId }: ReviewProps) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [newReview, setNewReview] = useState({ rating: 0, review: "" });
   const [loading, setLoading] = useState(false);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+
   const base_url = process.env.NEXT_PUBLIC_BASE_URL_BE;
 
   useEffect(() => {
-    console.log("Fetching reviews for event ID:", eventId); // Check if the eventId is correct
+    const fetchEventDetails = async () => {
+      try {
+        const response = await fetch(`${base_url}/events/${eventId}`);
+        const data = await response.json();
+        if (response.ok) {
+          setEndDate(new Date(data.event.endDate));
+        } else {
+          console.error("Error fetching event details:", data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching event details:", error);
+      }
+    };
+
     const fetchReviews = async () => {
       try {
         const response = await fetch(`${base_url}/reviews/${eventId}`);
@@ -36,15 +55,21 @@ function EventReview({ eventId }: ReviewProps) {
       }
     };
 
+    fetchEventDetails();
     fetchReviews();
   }, [eventId]);
 
   const handleAddReview = async () => {
+    if (endDate && new Date() < endDate) {
+      toast.error("You can only submit a review after the event ends.");
+      return;
+    }
+
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
       if (!token) {
-        console.error("User not authenticated.");
+        toast.error("User not authenticated.");
         return;
       }
 
@@ -64,12 +89,13 @@ function EventReview({ eventId }: ReviewProps) {
           { ...newReview, user, createdAt: new Date().toISOString() },
         ]);
         setNewReview({ rating: 0, review: "" });
+        toast.success("Review submitted successfully.");
       } else {
         const errorData = await response.json();
-        console.error("Failed to add review:", errorData.message);
+        toast.error(`Failed to add review: ${errorData.message}`);
       }
     } catch (error) {
-      console.error("Error adding review:", error);
+      toast.error("Error adding review.");
     } finally {
       setLoading(false);
     }

@@ -2,7 +2,9 @@
 
 import RichTextEditor from "@/components/form/events/textEditor";
 import authGuard from "@/hoc/authGuard";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { FaImage, FaTags, FaTicketAlt } from "react-icons/fa";
 import {
   FiPlus,
   FiSave,
@@ -11,9 +13,8 @@ import {
   FiMapPin,
   FiCalendar,
 } from "react-icons/fi";
-import { FaTicketAlt, FaTags, FaImage } from "react-icons/fa";
-import { toast } from "react-toastify";
-import Router from "next/router";
+
+import { Slide, toast } from "react-toastify";
 
 const CreateEvent = () => {
   const [eventData, setEventData] = useState({
@@ -33,6 +34,7 @@ const CreateEvent = () => {
   const enumCategories = ["MUSIC", "FILM", "SPORT", "EDUCATION"];
   const ticketTypes = ["STANDARD", "VIP", "VVIP", "FREE"];
   const [token, setToken] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const tokenFromLocalStorage = localStorage.getItem("token");
@@ -90,10 +92,6 @@ const CreateEvent = () => {
   };
 
   const handleCreateEventAndTickets = async () => {
-    if (!token) {
-      toast.error("No token found. Please Login.");
-      return;
-    }
     try {
       const formData = new FormData();
       Object.entries(eventData).forEach(([key, value]) => {
@@ -104,53 +102,64 @@ const CreateEvent = () => {
       if (!token) {
         throw new Error("No token found. Please Login.");
       }
+
       const base_url = process.env.NEXT_PUBLIC_BASE_URL_BE;
-      const response = await fetch(`${base_url}/api/event/create/`, {
+
+      // Create event
+      const response = await fetch(`${base_url}/event/create/`, {
         method: "POST",
         body: formData,
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const result = await response.json();
-
-      if (response.ok) {
-        const eventId = result.event_id;
-
-        if (
-          tickets.some(
-            (ticket) => !ticket.type || !ticket.seats || !ticket.lastOrder
-          )
-        ) {
-          alert("All ticket fields are required.");
-          return;
-        }
-
-        const ticketResponse = await fetch(
-          `${base_url}/api/event/create/ticket/${eventId}`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ tickets }),
-          }
-        );
-
-        const ticketResult = await ticketResponse.json();
-
-        if (ticketResponse.ok) {
-          toast.success("Event and tickets created successfully!");
-          Router.push("/dashboard/myevent");
-        } else {
-          toast.error(`Error creating tickets: ${ticketResult.message}`);
-        }
-      } else {
-        toast.error("Error creating event");
+      if (!response.ok) {
+        const errorResult = await response.json();
+        throw new Error(errorResult.message || "Failed to create event");
       }
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to create event and tickets.");
+
+      const result = await response.json();
+      const eventId = result.event_id;
+
+      // Validate tickets
+      if (
+        tickets.some(
+          (ticket) => !ticket.type || !ticket.seats || !ticket.lastOrder
+        )
+      ) {
+        toast.error("All ticket fields are required.");
+        return;
+      }
+
+      // Create tickets
+      const ticketResponse = await fetch(
+        `${base_url}/event/create/ticket/${eventId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ tickets }),
+        }
+      );
+
+      if (!ticketResponse.ok) {
+        const ticketResult = await ticketResponse.json();
+        throw new Error(ticketResult.message || "Failed to create tickets");
+      }
+
+      // Success message and redirect
+      toast.success("Event and tickets created successfully!", {
+        hideProgressBar: true,
+        transition: Slide,
+        className: "custom-toast",
+      });
+
+      router.push("/dashboard/myevent");
+      return; // Hentikan eksekusi di sini setelah sukses
+    } catch (error: any) {
+      console.error("Error:", error);
+      toast.error(error.message || "Failed to create event and tickets.");
     }
   };
 

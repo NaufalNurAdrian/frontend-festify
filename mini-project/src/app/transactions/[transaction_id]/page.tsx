@@ -16,6 +16,8 @@ import { FaLocationDot } from "react-icons/fa6";
 import { SlCalender } from "react-icons/sl";
 import authGuard from "@/hoc/authGuard";
 import { IOrderDetail, ITransaction } from "@/types/transaction";
+import { Slide, toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 function OrderPage({ params }: { params: { transaction_id: string } }) {
   const [transaction, setTransaction] = useState<ITransaction | null>(null);
@@ -25,6 +27,7 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
     ITransaction["user"]["coupon"][] | null
   >(null);
   const [selectedCoupon, setSelectedCoupon] = useState<number | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -264,7 +267,24 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
           <span>{formatPrice(finalPrice)}</span>
         </div>
         <div className="flex justify-center items-center">
-          {token && <PayButton token={token} />}
+          {transaction.OrderDetail.every(
+            (detail) => detail.ticketId.type === "FREE"
+          ) ? (
+            <button
+              className="bg-red text-white py-2 px-4 rounded hover:bg-red transition"
+              onClick={() => {
+                toast.success("You have successfully ordered free tickets!", {
+                  hideProgressBar: true,
+                  transition: Slide,
+                });
+                router.push("/dashboard/myticket");
+              }}
+            >
+              Get Free Tickets
+            </button>
+          ) : (
+            token && <PayButton token={token} />
+          )}
         </div>
       </div>
     </main>
