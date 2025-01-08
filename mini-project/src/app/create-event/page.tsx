@@ -33,7 +33,7 @@ const CreateEvent = () => {
 
   const enumCategories = ["MUSIC", "FILM", "SPORT", "EDUCATION"];
   const ticketTypes = ["STANDARD", "VIP", "VVIP", "FREE"];
-  const [token, setToken] = useState<string | null>(null);
+  const [, setToken] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
