@@ -17,9 +17,7 @@ interface Ticket {
     finalPrice: number;
     transactionDate: string;
     expiredAt: string;
-    OrderDetail: {
-        qrCode: string
-    }
+    paymentStatus: string;
   };
   ticketId: {
     type: string;
@@ -46,7 +44,8 @@ function Tickets() {
           console.log("Login First");
           return;
         }
-        const response = await fetch("http://localhost:8000/api/users/ticket", {
+        const base_url = process.env.NEXT_PUBLIC_BASE_URL_BE;
+        const response = await fetch(`${base_url}/users/ticket`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -98,6 +97,7 @@ function Tickets() {
             <h3 className="font-semibold line-clamp-1 text-sm">
               {ticket.ticketId.event.title}
             </h3>
+            <h3>{ticket.transaction.paymentStatus}</h3>
             <p className="flex items-center gap-2 text-xs text-gray-700">
               <SlCalender className="text-lightBlue" />
               {new Date(

@@ -51,10 +51,8 @@ export default function ForgotPass() {
                   setIsLoading(true);
                   try {
                     // Kirim permintaan ke server
-                    await axios.post(
-                      "http://localhost:8000/api/users/verify-forgot",
-                      values
-                    );
+
+                    await axios.post("/users/verify-forgot", values);
                     // Tampilkan notifikasi keberhasilan
                     toast.success("Email sent successfully!");
 
