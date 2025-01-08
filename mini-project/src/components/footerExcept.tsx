@@ -23,6 +23,7 @@ export default function FooterExcept() {
     "/dashboard/review",
     "/signup",
     "/transactions",
+    "/dashboard/gatein",
     transaction_id ? `/transactions/${transaction_id}` : null, // Add the dynamically generated path
   ];
 

@@ -1,7 +1,7 @@
 "use client";
 
-import React from 'react';
-import { useQRCode } from 'next-qrcode';
+import React from "react";
+import { useQRCode } from "next-qrcode";
 import EventReview from "@/components/eventReview";
 import authGuard from "@/hoc/authGuard";
 import { useEffect, useState } from "react";
@@ -18,6 +18,9 @@ interface Ticket {
     transactionDate: string;
     expiredAt: string;
     paymentStatus: string;
+    OrderDetail: [{
+      qrCode: string;
+    }];
   };
   ticketId: {
     type: string;
@@ -93,29 +96,46 @@ function Tickets() {
           <div className="absolute right-0 top-1/2 -translate-y-1/2 -mr-2 w-4 h-4 border border-dashed border-red rounded-full bg-[#f5f5f5]"></div>
 
           {/* Ticket Details */}
-          <div className="py-2 flex flex-col gap-1">
-            <h3 className="font-semibold line-clamp-1 text-sm">
-              {ticket.ticketId.event.title}
-            </h3>
-            <h3>{ticket.transaction.paymentStatus}</h3>
-            <p className="flex items-center gap-2 text-xs text-gray-700">
-              <SlCalender className="text-lightBlue" />
-              {new Date(
-                ticket.ticketId.event.startTime
-              ).toLocaleDateString()} -{" "}
-              {new Date(ticket.ticketId.event.endTime).toLocaleDateString()}
-            </p>
-            <p className="flex items-center gap-2 text-xs text-gray-700">
-              <FaClock className="text-lightBlue" />
-              {new Date(
-                ticket.ticketId.event.startTime
-              ).toLocaleTimeString()} -{" "}
-              {new Date(ticket.ticketId.event.endTime).toLocaleTimeString()}
-            </p>
-            <p className="flex items-center gap-2 text-xs text-gray-700">
-              <FaLocationDot className="text-lightBlue" />
-              {ticket.ticketId.event.location}
-            </p>
+          <div className="py-2 w-full flex flex-row gap-1">
+            <div>
+              <h3 className="font-semibold line-clamp-1 text-sm">
+                {ticket.ticketId.event.title}
+              </h3>
+              <h3>{ticket.transaction.paymentStatus}</h3>
+              <p className="flex items-center gap-2 text-xs text-gray-700">
+                <SlCalender className="text-lightBlue" />
+                {new Date(
+                  ticket.ticketId.event.startTime
+                ).toLocaleDateString()}{" "}
+                - {new Date(ticket.ticketId.event.endTime).toLocaleDateString()}
+              </p>
+              <p className="flex items-center gap-2 text-xs text-gray-700">
+                <FaClock className="text-lightBlue" />
+                {new Date(
+                  ticket.ticketId.event.startTime
+                ).toLocaleTimeString()}{" "}
+                - {new Date(ticket.ticketId.event.endTime).toLocaleTimeString()}
+              </p>
+              <p className="flex items-center gap-2 text-xs text-gray-700">
+                <FaLocationDot className="text-lightBlue" />
+                {ticket.ticketId.event.location}
+              </p>
+            </div>
+            <div className="flex justify-end items-end ml-40">
+              <Canvas
+                text={ticket.transaction.OrderDetail[0].qrCode}
+                options={{
+                  errorCorrectionLevel: "M",
+                  margin: 3,
+                  scale: 4,
+                  width: 200,
+                  color: {
+                    dark: "#010599FF",
+                    light: "#FFBF60FF",
+                  },
+                }}
+              />
+            </div>
           </div>
 
           {/* Ticket Table */}
