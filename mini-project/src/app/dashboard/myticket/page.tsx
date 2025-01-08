@@ -1,5 +1,7 @@
 "use client";
 
+import React from 'react';
+import { useQRCode } from 'next-qrcode';
 import EventReview from "@/components/eventReview";
 import authGuard from "@/hoc/authGuard";
 import { useEffect, useState } from "react";
@@ -15,6 +17,9 @@ interface Ticket {
     finalPrice: number;
     transactionDate: string;
     expiredAt: string;
+    OrderDetail: {
+        qrCode: string
+    }
   };
   ticketId: {
     type: string;
@@ -31,6 +36,7 @@ interface Ticket {
 function Tickets() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
+  const { Canvas } = useQRCode();
 
   useEffect(() => {
     const fetchTickets = async () => {

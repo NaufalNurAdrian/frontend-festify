@@ -56,32 +56,32 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
   }, [params.transaction_id]);
 
   const handleApplyCoupon = async () => {
-    if (!selectedCoupon || !selectedPoint || !transaction) return;
-
+    if (!selectedCoupon || !transaction) return;
+  
     try {
       const response = await applyCoupon(
         transaction.transaction_id,
-        selectedCoupon.toString() || selectedPoint.toString(),
+        selectedCoupon.toString()
       );
-
+  
       if (response.message === "Coupon applied successfully") {
         const coupon = coupons?.find(
           (coupon) => coupon.coupon_id === selectedCoupon
         );
-
+  
         if (!coupon) {
           alert("Coupon not found");
           return;
         }
-
+  
         const discountAmount =
           (transaction.totalPrice * coupon.discountAmount) / 100;
         const finalPrice = transaction.totalPrice - discountAmount;
-
+  
         const updatedTransaction = await getTransactionDetail(
           params.transaction_id
         );
-
+  
         setTransaction((prevTransaction) => {
           if (!prevTransaction) {
             return {
@@ -89,62 +89,61 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
               finalPrice,
             };
           }
-
+  
           return {
             ...prevTransaction,
             finalPrice,
           };
         });
-
+  
         alert(
           `Coupon applied successfully! Discount: ${coupon.discountAmount}%`
         );
       }
-      
-      if (response.message === "Coupon applied successfully") {
-        const point = points?.find(
-          (point) => point === selectedPoint
-        );
-
-        if (!point) {
-          alert("point not found");
-          return;
-        }
-
-
-        const discountAmount =
-          (transaction.totalPrice - point)
-        const finalPrice = transaction.totalPrice - discountAmount;
-
-        const updatedTransaction = await getTransactionDetail(
-          params.transaction_id
-        );
-
-        setTransaction((prevTransaction) => {
-          if (!prevTransaction) {
-            return {
-              ...updatedTransaction,
-              finalPrice,
-            };
-          }
-
-          return {
-            ...prevTransaction,
-            finalPrice,
-          };
-        });
-
-        alert(
-          `point applied successfully! Discount: ${point}`
-        );
-      }
-
-
     } catch (error) {
       alert("Failed to apply coupon. Please try again.");
       console.error(error);
     }
   };
+  
+  const handleApplyPoint = async () => {
+    if (!selectedPoint || !transaction) return;
+  
+    try {
+      const pointValue = selectedPoint;
+  
+      if (!pointValue) {
+        alert("Point not valid");
+        return;
+      }
+  
+      const finalPrice = transaction.totalPrice - pointValue;
+  
+      const updatedTransaction = await getTransactionDetail(
+        params.transaction_id
+      );
+  
+      setTransaction((prevTransaction) => {
+        if (!prevTransaction) {
+          return {
+            ...updatedTransaction,
+            finalPrice,
+          };
+        }
+  
+        return {
+          ...prevTransaction,
+          finalPrice,
+        };
+      });
+  
+      alert(`Point applied successfully! Discount: ${pointValue}`);
+    } catch (error) {
+      alert("Failed to apply point. Please try again.");
+      console.error(error);
+    }
+  };
+  
 
   if (loading) {
     return (
@@ -262,74 +261,67 @@ function OrderPage({ params }: { params: { transaction_id: string } }) {
         </div>
         
         {points && points.length > 0 && (
-          <div className="flex flex-col gap-2 mt-4">
-            <label htmlFor="coupon" className="font-semibold">
-              Select Point
-            </label>
-            <select
-              id="coupon"
-              className="border rounded-2xl px-2 py-1"
-              value={selectedCoupon || ""}
-              onChange={(e) => setSelectedPoint(Number(e.target.value))}
-            >
-              <option value="">No Coupon</option>
-              {points?.map((point) => (
-                <option
-                  key={point}
-                  value={point}
-                  disabled={
-                    !point
-                  } // Disable jika Used === true
-                >
-                  {point}
-                </option>
-              ))}
-            </select>
-            <button
-              onClick={handleApplyCoupon}
-              className="bg-red text-white px-4 py-2 rounded-2xl mt-2 w-[15%]"
-              disabled={!selectedCoupon} // Tombol disable jika tidak ada kupon dipilih
-            >
-              Apply Coupon
-            </button>
-          </div>
-        )}
+  <div className="flex flex-col gap-2 mt-4">
+    <label htmlFor="point" className="font-semibold">
+      Select Point
+    </label>
+    <select
+      id="point"
+      className="border rounded-2xl px-2 py-1"
+      value={selectedPoint || ""}
+      onChange={(e) => setSelectedPoint(Number(e.target.value))}
+    >
+      <option value="">No Point</option>
+      {points?.map((point) => (
+        <option key={point} value={point}>
+          {point}
+        </option>
+      ))}
+    </select>
+    <button
+      onClick={handleApplyPoint}
+      className="bg-red text-white px-4 py-2 rounded-2xl mt-2 w-[15%]"
+      disabled={!selectedPoint}
+    >
+      Apply Point
+    </button>
+  </div>
+)}
 
-        {coupons && coupons.length > 0 && (
-          <div className="flex flex-col gap-2 mt-4">
-            <label htmlFor="coupon" className="font-semibold">
-              Select Coupon
-            </label>
-            <select
-              id="coupon"
-              className="border rounded-2xl px-2 py-1"
-              value={selectedCoupon || ""}
-              onChange={(e) => setSelectedCoupon(Number(e.target.value))}
-            >
-              <option value="">No Coupon</option>
-              {coupons?.map((coupon) => (
-                <option
-                  key={coupon?.coupon_id}
-                  value={coupon?.coupon_id}
-                  disabled={
-                    !coupon || coupon.expiresAt < new Date().toISOString()
-                  } // Disable jika Used === true
-                >
-                  {coupon?.used ? "Already Used - " : ""}
-                  Refferal Discount {coupon?.discountAmount}% - Expires:{" "}
-                  {formatDate(coupon?.expiresAt)}
-                </option>
-              ))}
-            </select>
-            <button
-              onClick={handleApplyCoupon}
-              className="bg-red text-white px-4 py-2 rounded-2xl mt-2 w-[15%]"
-              disabled={!selectedCoupon} // Tombol disable jika tidak ada kupon dipilih
-            >
-              Apply Coupon
-            </button>
-          </div>
-        )}
+{coupons && coupons.length > 0 && (
+  <div className="flex flex-col gap-2 mt-4">
+    <label htmlFor="coupon" className="font-semibold">
+      Select Coupon
+    </label>
+    <select
+      id="coupon"
+      className="border rounded-2xl px-2 py-1"
+      value={selectedCoupon || ""}
+      onChange={(e) => setSelectedCoupon(Number(e.target.value))}
+    >
+      <option value="">No Coupon</option>
+      {coupons?.map((coupon) => (
+        <option
+          key={coupon?.coupon_id}
+          value={coupon?.coupon_id}
+          disabled={!coupon || coupon.expiresAt < new Date().toISOString()}
+        >
+          {coupon?.used ? "Already Used - " : ""}
+          Refferal Discount {coupon?.discountAmount}% - Expires:{" "}
+          {formatDate(coupon?.expiresAt)}
+        </option>
+      ))}
+    </select>
+    <button
+      onClick={handleApplyCoupon}
+      className="bg-red text-white px-4 py-2 rounded-2xl mt-2 w-[15%]"
+      disabled={!selectedCoupon}
+    >
+      Apply Coupon
+    </button>
+  </div>
+)}
+
         <div className="flex justify-between items-center font-semibold text-xl border-t border-b border-dashed py-2">
           <span>Total Pay</span>
           <span>
