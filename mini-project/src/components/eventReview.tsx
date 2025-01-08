@@ -95,6 +95,7 @@ function EventReview({ eventId }: ReviewProps) {
         toast.error(`Failed to add review: ${errorData.message}`);
       }
     } catch (error) {
+      console.log(error);
       toast.error("Error adding review.");
     } finally {
       setLoading(false);
