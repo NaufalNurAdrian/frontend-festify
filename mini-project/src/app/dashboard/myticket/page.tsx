@@ -18,9 +18,11 @@ interface Ticket {
     transactionDate: string;
     expiredAt: string;
     paymentStatus: string;
-    OrderDetail: [{
-      qrCode: string;
-    }];
+    OrderDetail: [
+      {
+        qrCode: string;
+      }
+    ];
   };
   ticketId: {
     type: string;
