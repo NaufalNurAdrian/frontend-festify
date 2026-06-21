@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic"
 import EventTabs from "@/components/eventTabs";
 import { getEventSlug } from "@/libs/events";
 import { IEvent } from "@/types/event";
