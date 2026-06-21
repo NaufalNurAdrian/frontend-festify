@@ -4,7 +4,7 @@ steps:
       - build
       - 'asia-southeast2-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/frontend-festify/frontend-festify:$COMMIT_SHA'
       - '--builder=gcr.io/buildpacks/builder:latest'
-      - '--env=NEXT_PUBLIC_BASE_URL_BE=https://front-end-festify-406859986941.asia-southeast2.run.app/api'
+      - '--env=NEXT_PUBLIC_BASE_URL_BE=https://front-end-festify-406859986941.asia-southeast2.run.app/api/'
 
   - name: 'gcr.io/cloud-builders/docker'
     args:
