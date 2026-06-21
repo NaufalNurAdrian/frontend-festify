@@ -1,23 +1,29 @@
 steps:
-  - name: 'node:20'
-    entrypoint: 'npm'
-    args: ['ci', '--legacy-peer-deps']
-
-  - name: 'node:20'
-    entrypoint: 'npm'
-    args: ['run', 'build']
+  - name: 'gcr.io/k8s-skaffold/pack'
+    args:
+      - build
+      - 'asia-southeast2-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/frontend-festify/frontend-festify:$COMMIT_SHA'
+      - '--builder=gcr.io/buildpacks/builder:latest'
+      - '--env=NEXT_PUBLIC_BASE_URL_BE=https://front-end-festify-406859986941.asia-southeast2.run.app/api'
 
   - name: 'gcr.io/cloud-builders/docker'
     args:
-      - 'build'
-      - '-t'
+      - push
       - 'asia-southeast2-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/frontend-festify/frontend-festify:$COMMIT_SHA'
-      - '.'
 
-  - name: 'gcr.io/cloud-builders/docker'
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
     args:
-      - 'push'
-      - 'asia-southeast2-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/frontend-festify/frontend-festify:$COMMIT_SHA'
+      - run
+      - deploy
+      - frontend-festify
+      - '--image=asia-southeast2-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/frontend-festify/frontend-festify:$COMMIT_SHA'
+      - '--region=asia-southeast2'
+      - '--set-env-vars=NEXT_PUBLIC_BASE_URL_BE=https://front-end-festify-406859986941.asia-southeast2.run.app/api/'
+      - '--set-env-vars=NEXT_PUBLIC_MIDTRANS_CLIENT_KEY=$_MIDTRANS_CLIENT_KEY'
+
+substitutions:
+  _MIDTRANS_CLIENT_KEY: 'Mid-client-_lcSOprVCphULtNV'
 
 images:
   - 'asia-southeast2-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/frontend-festify/frontend-festify:$COMMIT_SHA'
