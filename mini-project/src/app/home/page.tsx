@@ -1,4 +1,3 @@
-export const dynamic = "force-dynamic";
 import EventCard from "@/components/cardevent";
 import Carousel from "@/components/carousel";
 import CategoryCards from "@/components/categorycard";
